@@ -1,0 +1,14 @@
+LIGHT BEACON,Boolean,  0
+LIGHT BEACON ON,Boolean,  1
+LIGHT CABIN,Boolean,  1
+LIGHT CABIN ON,Boolean,  1
+LIGHT NAV,Boolean,  1
+LIGHT NAV ON,Boolean,  1
+LIGHT TAXI,Boolean,  0
+LIGHT TAXI ON,Boolean,  1
+LIGHT WING,Boolean,  0
+LIGHT WING ON,Boolean,  1
+LIGHT STROBE,Boolean,  1
+LIGHT STROBE ON,Boolean,  1
+LIGHT LANDING,Boolean,  1
+LIGHT LANDING ON,Boolean,  1

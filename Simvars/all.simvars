@@ -1,0 +1,14 @@
+ACCELERATION BODY X,feet per second squared,  0
+ACCELERATION BODY Y,feet per second squared,  0
+ACCELERATION BODY Z,feet per second squared,  0
+ACCELERATION WORLD X,feet per second squared,  0
+ACCELERATION WORLD Y,feet per second squared,  0
+ACCELERATION WORLD Z,feet per second squared,  0
+ADF ACTIVE FREQUENCY:1,Frequency ADF BCD32,  0
+ADF ACTIVE FREQUENCY:2,Frequency ADF BCD32,  0
+ADF AVAILABLE,Bool,  0
+ADF CARD,degrees,  0
+ADF RADIAL:1,degrees,  0
+ADF RADIAL:2,degrees,  0
+ADF SIGNAL:1,number,  0
+ADF SIGNAL:2,number,  0
