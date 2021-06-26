@@ -1,13 +1,11 @@
-﻿using System.Net;
-using System.Security.Policy;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Simvars.Util
 {
     public static class FlightRadarApi
     {
-        private static readonly double LongitudeModifier = 0.3;
-        private static readonly double LatitudeModifier = 1;
+        private const double LongitudeModifier = 0.3;
+        private const double LatitudeModifier = 1;
 
         public static JObject GetAircraftData(string flightRadarId)
         {

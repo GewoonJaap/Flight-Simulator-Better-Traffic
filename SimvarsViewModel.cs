@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 
 using Microsoft.FlightSimulator.SimConnect;
+using Simvars.Emum;
 using Simvars.Util;
 
 namespace Simvars
@@ -346,20 +347,10 @@ namespace Simvars
             }
         }
 
-        internal enum DATA_REQUESTS
-        {
-            SIM_STATE,
-            AIRCRAFT_POSITION,
-            AI_DESPAWN,
-            AI_RELEASE,
-
-            AI_SPAWN = 10000, // 10000 to 19999
-        }
-
         private void SpawnPlane()
         {
             FlightRadarApi.GetAircraftData("2830dfbd");
-            var requestID = DATA_REQUESTS.AI_SPAWN + requestCount;
+            var requestID = DataRequests.AI_SPAWN + requestCount;
             requestCount = (requestCount + 1) % 10000;
             Console.WriteLine(@"Spawning a plane!");
             var position = new SIMCONNECT_DATA_INITPOSITION
