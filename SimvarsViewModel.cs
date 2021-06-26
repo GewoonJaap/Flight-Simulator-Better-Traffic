@@ -358,7 +358,7 @@ namespace Simvars
 
         private void SpawnPlane()
         {
-            ApiRequest.GetAircraftData("2830dfbd");
+            FlightRadarApi.GetAircraftData("2830dfbd");
             var requestID = DATA_REQUESTS.AI_SPAWN + requestCount;
             requestCount = (requestCount + 1) % 10000;
             Console.WriteLine(@"Spawning a plane!");

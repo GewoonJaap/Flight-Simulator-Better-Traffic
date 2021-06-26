@@ -89,6 +89,7 @@
     <Compile Include="textsimvars.cs" />
     <Compile Include="units.cs" />
     <Compile Include="Util\ApiRequest.cs" />
+    <Compile Include="Util\FlightRadarApi.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

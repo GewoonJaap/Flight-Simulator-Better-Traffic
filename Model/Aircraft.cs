@@ -14,7 +14,7 @@ namespace Simvars.Model
 
         #region Aircraft
 
-        public string Id;
+        public string FlightRadarId;
         public string Callsign;
         public AircraftModel Model;
         public string Airline;

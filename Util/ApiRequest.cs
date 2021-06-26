@@ -7,11 +7,11 @@ namespace Simvars.Util
 {
     public static class ApiRequest
     {
-        public static JObject GetAircraftData(string id)
+        public static JObject MakeGetRequest(string url)
         {
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
-                HttpResponseMessage response = client.GetAsync("https://data-live.flightradar24.com/clickhandler/?version=1.5&flight=" + id).Result;
+                HttpResponseMessage response = client.GetAsync(url).Result;
                 response.EnsureSuccessStatusCode();
                 string result = response.Content.ReadAsStringAsync().Result;
                 return JObject.Parse(result);
