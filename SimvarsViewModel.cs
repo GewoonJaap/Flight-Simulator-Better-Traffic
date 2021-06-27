@@ -345,6 +345,8 @@ namespace Simvars
                 /// Listen to connect and quit msgs
                 m_oSimConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(SimConnect_OnRecvOpen);
                 m_oSimConnect.OnRecvQuit += new SimConnect.RecvQuitEventHandler(SimConnect_OnRecvQuit);
+                m_oSimConnect.OnRecvAssignedObjectId +=
+                    new SimConnect.RecvAssignedObjectIdEventHandler(SimConnect_OnRecvAssignedObjectId);
 
                 /// Listen to exceptions
                 m_oSimConnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(SimConnect_OnRecvException);
@@ -364,6 +366,12 @@ namespace Simvars
         private void DataTimerCallback(object? state)
         {
             _liveTrafficHandler.FetchNewData(_plane);
+        }
+
+        private void SimConnect_OnRecvAssignedObjectId(SimConnect sender, SIMCONNECT_RECV_ASSIGNED_OBJECT_ID data)
+        {
+            Console.WriteLine("Recieved object ID " + data.dwObjectID + " from request: " + data.dwRequestID);
+            _liveTrafficHandler.SetObjectId(data.dwRequestID, data.dwObjectID);
         }
 
         private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)

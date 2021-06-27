@@ -2,6 +2,6 @@
 {
     public enum SimConnectDataDefinition
     {
-        planeLocation
+        planeLocation,
     }
 }

@@ -27,6 +27,16 @@ namespace Simvars.Util
             ParsePlaneData((JObject)planeData["data"]);
         }
 
+        public void SetObjectId(uint requestId, uint objectId)
+        {
+            Aircraft aircraft = _liveTrafficAircraft.FirstOrDefault(item => item.RequestId == requestId);
+            if (aircraft != null)
+            {
+                Console.WriteLine("Setting object ID for: " + aircraft.Callsign);
+                aircraft.ObjectId = objectId;
+            }
+        }
+
         private void ParsePlaneData(JObject planeData)
         {
             foreach (JProperty property in planeData.Properties())
@@ -65,8 +75,9 @@ namespace Simvars.Util
         private void SpawnPlane(Aircraft aircraft)
         {
             var requestId = DataRequests.AI_SPAWN + _requestCount;
+            aircraft.RequestId = (10000 + _requestCount);
+            Console.WriteLine(@"Spawning a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId);
             _requestCount = (_requestCount + 1) % 10000;
-            Console.WriteLine(@"Spawning a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude);
             var position = new SIMCONNECT_DATA_INITPOSITION
             {
                 Latitude = aircraft.Latitude,
@@ -79,7 +90,6 @@ namespace Simvars.Util
                 Airspeed = (uint)aircraft.Speed,
             };
             _simConnect.AICreateNonATCAircraft("Airbus A320 Neo KLM", aircraft.TailNumber, position, requestId);
-            aircraft.RequestId = requestId;
         }
     }
 }
