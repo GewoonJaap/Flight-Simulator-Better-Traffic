@@ -38,8 +38,10 @@ namespace Simvars.Util
                 if (aircraft == null)
                 {
                     JObject extraData = FlightRadarApi.GetAircraftData(property.Name);
-                    if ((bool)extraData["success"] != true) continue;
-                    extraData = (JObject)extraData["data"];
+                    if ((bool)extraData["success"])
+                    {
+                        extraData = (JObject)extraData["data"];
+                    }
 
                     aircraft = new Aircraft()
                     {
@@ -52,7 +54,7 @@ namespace Simvars.Util
                         FlightRadarId = property.Name,
                         IsGrounded = (bool)property.Value[14],
                         TailNumber = (string)extraData["identification"]?["number"]?["default"] ?? (string)property.Value[16],
-                        Model = (string)extraData["aircraft"]?["model"]?["text"],
+                        Model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo Asobo",
                     };
                     _liveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
@@ -64,7 +66,7 @@ namespace Simvars.Util
         {
             var requestId = DataRequests.AI_SPAWN + _requestCount;
             _requestCount = (_requestCount + 1) % 10000;
-            Console.WriteLine(@"Spawning a plane " + aircraft.TailNumber + " lat: " +  aircraft.Latitude +  " long: " + aircraft.Longitude);
+            Console.WriteLine(@"Spawning a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude);
             var position = new SIMCONNECT_DATA_INITPOSITION
             {
                 Latitude = aircraft.Latitude,
