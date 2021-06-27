@@ -90,6 +90,7 @@ namespace Simvars.Util
                     position.Bank = 0;
                     position.Airspeed = (uint)aircraft.Speed;
                     position.OnGround = (uint)(aircraft.IsGrounded ? 1 : 0);
+                    Console.WriteLine("Updating a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId);
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.planeLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
             }

@@ -395,6 +395,11 @@ namespace Simvars
             }
             m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "Plane Altitude", "meters", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "Plane Pitch Degrees", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "Plane Bank Degrees", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "Plane Heading Degrees True", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "AIRSPEED TRUE", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             m_oSimConnect.RegisterDataDefineStruct<PlayerAircraftStruct>(SimConnectDataDefinition.planeLocation);
             m_oSimConnect.RequestDataOnSimObject(DataRequests.REQUEST_1, SimConnectDataDefinition.planeLocation, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.SECOND, 0, 0, 0, 0);
 
