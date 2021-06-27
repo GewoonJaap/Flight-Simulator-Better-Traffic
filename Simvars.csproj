@@ -78,6 +78,7 @@
     </Compile>
     <Compile Include="Emum\AircraftModel.cs" />
     <Compile Include="Emum\DataRequests.cs" />
+    <Compile Include="Emum\SimConnectDataDefinition.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -85,7 +86,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Aircraft.cs" />
+    <Compile Include="Model\PlayerAircraft.cs" />
     <Compile Include="SimvarsViewModel.cs" />
+    <Compile Include="Struct\PlayerAircraftStruct.cs" />
     <Compile Include="textsimvars.cs" />
     <Compile Include="units.cs" />
     <Compile Include="Util\ApiRequest.cs" />

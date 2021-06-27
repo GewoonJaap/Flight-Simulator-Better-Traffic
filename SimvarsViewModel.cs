@@ -8,6 +8,8 @@ using System.Windows.Threading;
 
 using Microsoft.FlightSimulator.SimConnect;
 using Simvars.Emum;
+using Simvars.Model;
+using Simvars.Struct;
 using Simvars.Util;
 
 namespace Simvars
@@ -303,6 +305,8 @@ namespace Simvars
 
         private int requestCount = 0;
 
+        private PlayerAircraft plane;
+
         public SimvarsViewModel()
         {
             lObjectIDs = new ObservableCollection<uint>();
@@ -326,6 +330,8 @@ namespace Simvars
         {
             Console.WriteLine("Connect");
 
+            plane = new PlayerAircraft();
+
             try
             {
                 /// The constructor is similar to SimConnect_Open in the native API
@@ -340,6 +346,7 @@ namespace Simvars
 
                 /// Catch a simobject data request
                 m_oSimConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
+                m_oSimConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(simconnect_OnRecvSimobjectData);
             }
             catch (COMException ex)
             {
@@ -384,6 +391,10 @@ namespace Simvars
                     oSimvarRequest.bStillPending = oSimvarRequest.bPending;
                 }
             }
+            m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            m_oSimConnect.AddToDataDefinition(SimConnectDataDefinition.planeLocation, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            m_oSimConnect.RegisterDataDefineStruct<PlayerAircraftStruct>(SimConnectDataDefinition.planeLocation);
+            m_oSimConnect.RequestDataOnSimObject(DataRequests.REQUEST_1, SimConnectDataDefinition.planeLocation, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.SECOND, 0, 0, 0, 0);
 
             m_oTimer.Start();
             bOddTick = false;
@@ -405,6 +416,12 @@ namespace Simvars
             Console.WriteLine("SimConnect_OnRecvException: " + eException.ToString());
 
             lErrorMessages.Add("SimConnect : " + eException.ToString());
+        }
+
+        private void simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
+        {
+            var planeStructure = (PlayerAircraftStruct)data.dwData[0];
+            plane.Update(planeStructure);
         }
 
         private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
