@@ -95,6 +95,7 @@
     <Compile Include="textsimvars.cs" />
     <Compile Include="units.cs" />
     <Compile Include="Util\ApiRequest.cs" />
+    <Compile Include="Util\FlightPlanFetcher.cs" />
     <Compile Include="Util\FlightRadarApi.cs" />
     <Compile Include="Util\LiveTrafficHandler.cs" />
     <Compile Include="Util\ModelMatching.cs" />
@@ -116,6 +117,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Config\ModelMatching.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

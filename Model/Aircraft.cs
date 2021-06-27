@@ -10,6 +10,7 @@ namespace Simvars.Model
         public int RequestId;
         private SimConnect m_simConnect;
         public uint ObjectId;
+        public string MatchedModel;
 
         #endregion SimData
 
