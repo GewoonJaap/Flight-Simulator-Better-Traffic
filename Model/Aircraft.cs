@@ -7,7 +7,7 @@ namespace Simvars.Model
     {
         #region SimData
 
-        public int RequestId;
+        public DataRequests RequestId;
         private SimConnect m_simConnect;
 
         #endregion SimData

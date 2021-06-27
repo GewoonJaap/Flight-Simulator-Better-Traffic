@@ -23,7 +23,8 @@ namespace Simvars.Util
         public void FetchNewData(PlayerAircraft plane)
         {
             JObject planeData = FlightRadarApi.GetAircraftNearby(plane.Longitude, plane.Latitude);
-            ParsePlaneData(planeData);
+            if ((bool)planeData["success"] != true) return;
+            ParsePlaneData((JObject)planeData["data"]);
         }
 
         private void ParsePlaneData(JObject planeData)
@@ -37,6 +38,8 @@ namespace Simvars.Util
                 if (aircraft == null)
                 {
                     JObject extraData = FlightRadarApi.GetAircraftData(property.Name);
+                    if ((bool)extraData["success"] != true) continue;
+                    extraData = (JObject)extraData["data"];
 
                     aircraft = new Aircraft()
                     {
@@ -48,7 +51,7 @@ namespace Simvars.Util
                         Callsign = (string)property.Value[16],
                         FlightRadarId = property.Name,
                         IsGrounded = (bool)property.Value[14],
-                        TailNumber = (string)extraData["identification"]?["number"]?["default"],
+                        TailNumber = (string)extraData["identification"]?["number"]?["default"] ?? (string)property.Value[16],
                         Model = (string)extraData["aircraft"]?["model"]?["text"],
                     };
                     _liveTrafficAircraft.Add(aircraft);
@@ -74,6 +77,7 @@ namespace Simvars.Util
                 Airspeed = (uint)aircraft.Speed,
             };
             _simConnect.AICreateNonATCAircraft("Airbus A320 Neo KLM", aircraft.TailNumber, position, requestId);
+            aircraft.RequestId = requestId;
         }
     }
 }

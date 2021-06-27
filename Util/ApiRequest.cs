@@ -12,9 +12,15 @@ namespace Simvars.Util
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
             {
                 HttpResponseMessage response = client.GetAsync(url).Result;
-                response.EnsureSuccessStatusCode();
-                string result = response.Content.ReadAsStringAsync().Result;
-                return JObject.Parse(result);
+                JObject returnValue = new JObject { ["success"] = false };
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    returnValue["success"] = true;
+                    returnValue["data"] = JObject.Parse(result);
+                }
+                return returnValue;
             }
         }
     }
