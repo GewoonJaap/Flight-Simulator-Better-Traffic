@@ -43,8 +43,8 @@ namespace Simvars.Util
 
                     aircraft = new Aircraft()
                     {
-                        Longitude = (double)property.Value[1],
-                        Latitude = (double)property.Value[2],
+                        Longitude = (double)property.Value[2],
+                        Latitude = (double)property.Value[1],
                         Heading = (int)property.Value[3],
                         Altimeter = (int)property.Value[4],
                         Speed = (int)property.Value[5],
@@ -64,7 +64,7 @@ namespace Simvars.Util
         {
             var requestId = DataRequests.AI_SPAWN + _requestCount;
             _requestCount = (_requestCount + 1) % 10000;
-            Console.WriteLine(@"Spawning a plane " + aircraft.TailNumber);
+            Console.WriteLine(@"Spawning a plane " + aircraft.TailNumber + " lat: " +  aircraft.Latitude +  " long: " + aircraft.Longitude);
             var position = new SIMCONNECT_DATA_INITPOSITION
             {
                 Latitude = aircraft.Latitude,

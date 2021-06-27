@@ -361,10 +361,6 @@ namespace Simvars
             }
         }
 
-        private void SpawnPlane()
-        {
-        }
-
         private void DataTimerCallback(object? state)
         {
             _liveTrafficHandler.FetchNewData(_plane);
@@ -396,7 +392,6 @@ namespace Simvars
 
             m_oTimer.Start();
             bOddTick = false;
-            SpawnPlane();
         }
 
         /// The case where the user closes game
