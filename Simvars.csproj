@@ -97,6 +97,7 @@
     <Compile Include="Util\ApiRequest.cs" />
     <Compile Include="Util\FlightRadarApi.cs" />
     <Compile Include="Util\LiveTrafficHandler.cs" />
+    <Compile Include="Util\ModelMatching.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

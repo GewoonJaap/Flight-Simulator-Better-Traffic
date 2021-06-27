@@ -74,18 +74,28 @@ namespace Simvars.Util
                         FlightRadarId = property.Name,
                         IsGrounded = isGrounded,
                         TailNumber = (string)extraData["identification"]?["number"]?["default"] ?? Callsign,
-                        Model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo Asobo",
+                        Model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo",
+                        Airline = (string)extraData["airline"]?["name"] ?? "Asobo",
+                        AirportOrigin = (string)extraData["aiport"]?["origin"]?["code"]?["icao"],
+                        AirportDestination = (string)extraData["aiport"]?["destination"]?["code"]?["icao"],
                     };
                     _liveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
                 }
                 else
                 {
+                    aircraft.Latitude = Latitude;
+                    aircraft.Longitude = Longitude;
+                    aircraft.Altimeter = Altimeter;
+                    aircraft.Heading = Heading;
+                    aircraft.Speed = Speed;
+                    aircraft.IsGrounded = isGrounded;
+
                     PositionData position;
-                    position.Latitude = Latitude;
-                    position.Longitude = Longitude;
-                    position.Altitude = Altimeter;
-                    position.Heading = Heading;
+                    position.Latitude = aircraft.Latitude;
+                    position.Longitude = aircraft.Longitude;
+                    position.Altitude = aircraft.Altimeter;
+                    position.Heading = aircraft.Heading;
                     position.Pitch = 0;
                     position.Bank = 0;
                     position.Airspeed = (uint)aircraft.Speed;
@@ -113,7 +123,7 @@ namespace Simvars.Util
                 OnGround = (uint)(aircraft.IsGrounded ? 1 : 0),
                 Airspeed = (uint)aircraft.Speed,
             };
-            _simConnect.AICreateNonATCAircraft("Airbus A320 Neo KLM", aircraft.TailNumber, position, requestId);
+            _simConnect.AICreateNonATCAircraft(ModelMatching.MatchModel(aircraft.Model, aircraft.Airline), aircraft.TailNumber, position, requestId);
         }
     }
 }

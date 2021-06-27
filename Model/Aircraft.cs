@@ -31,6 +31,8 @@ namespace Simvars.Model
         public int Speed;
         public int Heading;
         public bool IsGrounded;
+        public string AirportOrigin;
+        public string AirportDestination;
 
         #endregion FlightPath
     }
