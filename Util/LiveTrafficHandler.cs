@@ -5,6 +5,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using Newtonsoft.Json.Linq;
 using Simvars.Emum;
 using Simvars.Model;
+using Simvars.Struct;
 
 namespace Simvars.Util
 {
@@ -45,6 +46,15 @@ namespace Simvars.Util
                 if (!char.IsDigit(property.Name.ToCharArray()[0])) continue;
 
                 Aircraft aircraft = _liveTrafficAircraft.FirstOrDefault(item => item.FlightRadarId == property.Name);
+
+                double Longitude = (double)property.Value[2];
+                double Latitude = (double)property.Value[1];
+                int Heading = (int)property.Value[3];
+                int Altimeter = (int)property.Value[4];
+                int Speed = (int)property.Value[5];
+                string Callsign = (string)property.Value[16];
+                bool isGrounded = (bool)property.Value[14];
+
                 if (aircraft == null)
                 {
                     JObject extraData = FlightRadarApi.GetAircraftData(property.Name);
@@ -55,19 +65,32 @@ namespace Simvars.Util
 
                     aircraft = new Aircraft()
                     {
-                        Longitude = (double)property.Value[2],
-                        Latitude = (double)property.Value[1],
-                        Heading = (int)property.Value[3],
-                        Altimeter = (int)property.Value[4],
-                        Speed = (int)property.Value[5],
-                        Callsign = (string)property.Value[16],
+                        Longitude = Longitude,
+                        Latitude = Latitude,
+                        Heading = Heading,
+                        Altimeter = Altimeter,
+                        Speed = Speed,
+                        Callsign = Callsign,
                         FlightRadarId = property.Name,
-                        IsGrounded = (bool)property.Value[14],
-                        TailNumber = (string)extraData["identification"]?["number"]?["default"] ?? (string)property.Value[16],
+                        IsGrounded = isGrounded,
+                        TailNumber = (string)extraData["identification"]?["number"]?["default"] ?? Callsign,
                         Model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo Asobo",
                     };
                     _liveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
+                }
+                else
+                {
+                    PositionData position;
+                    position.Latitude = Latitude;
+                    position.Longitude = Longitude;
+                    position.Altitude = Altimeter;
+                    position.Heading = Heading;
+                    position.Pitch = 0;
+                    position.Bank = 0;
+                    position.Airspeed = (uint)aircraft.Speed;
+                    position.OnGround = (uint)(aircraft.IsGrounded ? 1 : 0);
+                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.planeLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
             }
         }

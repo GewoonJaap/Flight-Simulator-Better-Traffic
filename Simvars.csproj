@@ -91,6 +91,7 @@
     <Compile Include="Model\PlayerAircraft.cs" />
     <Compile Include="SimvarsViewModel.cs" />
     <Compile Include="Struct\PlayerAircraftStruct.cs" />
+    <Compile Include="Struct\PositionData.cs" />
     <Compile Include="textsimvars.cs" />
     <Compile Include="units.cs" />
     <Compile Include="Util\ApiRequest.cs" />
