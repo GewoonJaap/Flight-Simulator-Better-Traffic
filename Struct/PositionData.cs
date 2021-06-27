@@ -2,8 +2,8 @@
 {
     public struct PositionData
     {
-        public double Latitude;
         public double Longitude;
+        public double Latitude;
         public double Altitude;
         public double Pitch;
         public double Bank;
