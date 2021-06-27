@@ -38,8 +38,6 @@ namespace Simvars.Model
             Heading = planeStructure.heading;
             VerticalSpeed = planeStructure.verticalSpeed;
             GroundSpeed = planeStructure.groundSpeed;
-            //AirspeedData[cnt] = Airspeed;
-            //cnt = (cnt + 1) % N;
             if (y.Count == N)
             {
                 y.RemoveAt(0);

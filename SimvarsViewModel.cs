@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
@@ -114,6 +115,7 @@ namespace Simvars
 
         public void Disconnect()
         {
+            dataTimer.Dispose();
             Console.WriteLine("Disconnect");
 
             m_oTimer.Stop();
@@ -306,6 +308,9 @@ namespace Simvars
         private int requestCount = 0;
 
         private PlayerAircraft plane;
+        private LiveTrafficHandler lifeTrafficHandler = new LiveTrafficHandler();
+
+        private Timer dataTimer;
 
         public SimvarsViewModel()
         {
@@ -374,10 +379,17 @@ namespace Simvars
             m_oSimConnect.AICreateNonATCAircraft("Airbus A320 Neo KLM", "TEST", position, requestID);
         }
 
+        private void DataTimerCallback(object? state)
+        {
+            lifeTrafficHandler.FetchNewData(plane);
+        }
+
         private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
             Console.WriteLine("SimConnect_OnRecvOpen");
             Console.WriteLine("Connected to KH");
+
+            dataTimer = new Timer(DataTimerCallback, null, 0, 1000 * 10);
 
             sConnectButtonLabel = "Disconnect";
             bConnected = true;

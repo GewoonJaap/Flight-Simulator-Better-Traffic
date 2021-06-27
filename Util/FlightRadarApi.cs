@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace Simvars.Util
 {
@@ -20,9 +21,12 @@ namespace Simvars.Util
             string latitudeLow = (latitude - LatitudeModifier).ToString("#.000");
             string latitudeHigh = (latitude + LatitudeModifier).ToString("#.000");
 
-            string coordString = longitudeHigh + "%2C" + longitudeLow + "%2C" + latitudeLow + "%2C" + latitudeHigh;
+            string coordString = latitudeHigh + "%2C" + latitudeLow + "%2C" + longitudeLow + "%2C" + longitudeHigh;
+            coordString = coordString.Replace(",", ".");
             string url = "https://data-live.flightradar24.com/zones/fcgi/feed.js?faa=1&bounds=" + coordString +
                          "&satellite=1&mlat=1&flarm=1&adsb=1&gnd=1&air=1&vehicles=0&estimated=1&maxage=14400&gliders=1&stats=1";
+
+            Console.WriteLine(url);
 
             return ApiRequest.MakeGetRequest(url);
         }
