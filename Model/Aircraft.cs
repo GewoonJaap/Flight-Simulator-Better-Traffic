@@ -16,7 +16,8 @@ namespace Simvars.Model
 
         public string FlightRadarId;
         public string Callsign;
-        public AircraftModel Model;
+        public string TailNumber;
+        public string Model;
         public string Airline;
 
         #endregion Aircraft

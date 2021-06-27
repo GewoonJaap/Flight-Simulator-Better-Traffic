@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Threading;
 
 using Microsoft.FlightSimulator.SimConnect;
@@ -115,7 +117,7 @@ namespace Simvars
 
         public void Disconnect()
         {
-            dataTimer.Dispose();
+            _dataTimer.Dispose();
             Console.WriteLine("Disconnect");
 
             m_oTimer.Stop();
@@ -305,12 +307,10 @@ namespace Simvars
 
         #endregion Real time
 
-        private int requestCount = 0;
+        private PlayerAircraft _plane;
+        private LiveTrafficHandler _liveTrafficHandler;
 
-        private PlayerAircraft plane;
-        private LiveTrafficHandler lifeTrafficHandler = new LiveTrafficHandler();
-
-        private Timer dataTimer;
+        private Timer _dataTimer;
 
         public SimvarsViewModel()
         {
@@ -335,7 +335,7 @@ namespace Simvars
         {
             Console.WriteLine("Connect");
 
-            plane = new PlayerAircraft();
+            _plane = new PlayerAircraft();
 
             try
             {
@@ -352,6 +352,8 @@ namespace Simvars
                 /// Catch a simobject data request
                 m_oSimConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
                 m_oSimConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(simconnect_OnRecvSimobjectData);
+
+                _liveTrafficHandler = new LiveTrafficHandler(m_oSimConnect);
             }
             catch (COMException ex)
             {
@@ -361,27 +363,11 @@ namespace Simvars
 
         private void SpawnPlane()
         {
-            FlightRadarApi.GetAircraftData("2830dfbd");
-            var requestID = DataRequests.AI_SPAWN + requestCount;
-            requestCount = (requestCount + 1) % 10000;
-            Console.WriteLine(@"Spawning a plane!");
-            var position = new SIMCONNECT_DATA_INITPOSITION
-            {
-                Latitude = 52.328807,
-                Longitude = 4.738229,
-                Altitude = 1000,
-                Pitch = 10,
-                Bank = 0,
-                Heading = 40,
-                OnGround = 0,
-                Airspeed = 100,
-            };
-            m_oSimConnect.AICreateNonATCAircraft("Airbus A320 Neo KLM", "TEST", position, requestID);
         }
 
         private void DataTimerCallback(object? state)
         {
-            lifeTrafficHandler.FetchNewData(plane);
+            _liveTrafficHandler.FetchNewData(_plane);
         }
 
         private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
@@ -389,7 +375,7 @@ namespace Simvars
             Console.WriteLine("SimConnect_OnRecvOpen");
             Console.WriteLine("Connected to KH");
 
-            dataTimer = new Timer(DataTimerCallback, null, 0, 1000 * 10);
+            _dataTimer = new Timer(DataTimerCallback, null, 0, 1000 * 10);
 
             sConnectButtonLabel = "Disconnect";
             bConnected = true;
@@ -433,7 +419,7 @@ namespace Simvars
         private void simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
             var planeStructure = (PlayerAircraftStruct)data.dwData[0];
-            plane.Update(planeStructure);
+            _plane.Update(planeStructure);
         }
 
         private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
