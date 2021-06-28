@@ -44,6 +44,7 @@ namespace Simvars.Model
         public SIMCONNECT_DATA_WAYPOINT[] GetSimConnectDataWaypoints()
         {
             SIMCONNECT_DATA_WAYPOINT[] result = new SIMCONNECT_DATA_WAYPOINT[Waypoints.Count];
+            if(Waypoints.Count == 0) Console.WriteLine("Trying to generate a waypoint but I have no waypoint data! " + Callsign);
             for (int i = 0; i < Waypoints.Count; i++)
             {
                 if (Waypoints[i].IsGrounded)
@@ -59,6 +60,7 @@ namespace Simvars.Model
                 result[i].Longitude = Waypoints[i].Longitude;
                 result[i].ktsSpeed = Waypoints[i].Speed;
             }
+            Waypoints.RemoveAt(0);
 
             return result;
         }

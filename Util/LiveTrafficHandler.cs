@@ -103,22 +103,22 @@ namespace Simvars.Util
 
                     _liveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
+                    continue;
                 }
-                else //if (aircraft.Longitude != Longitude || aircraft.Latitude != Latitude || aircraft.Altimeter != Altimeter || aircraft.Speed != Speed)
+                aircraft.Latitude = Latitude;
+                aircraft.Longitude = Longitude;
+                aircraft.Altimeter = Altimeter;
+                aircraft.Heading = Heading;
+                aircraft.Speed = Speed;
+                aircraft.IsGrounded = isGrounded;
+                if (!aircraft.IsGrounded)
                 {
-                    aircraft.Latitude = Latitude;
-                    aircraft.Longitude = Longitude;
-                    aircraft.Altimeter = Altimeter;
-                    aircraft.Heading = Heading;
-                    aircraft.Speed = Speed;
-                    aircraft.IsGrounded = isGrounded;
-
                     // Old location updating code PositionData position; position.Latitude =
                     // aircraft.Latitude; position.Longitude = aircraft.Longitude; position.Altitude
                     // = aircraft.Altimeter; position.Heading = aircraft.Heading; position.Pitch =
                     // 0; position.Bank = 0; position.Airspeed = (uint)aircraft.Speed;
                     // position.OnGround = (uint)(aircraft.IsGrounded ? 1 : 0);
-                    Console.WriteLine("Updating a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading);
+                    Console.WriteLine("Updating a flying plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading);
                     // _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation,
                     // aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
 
@@ -130,7 +130,23 @@ namespace Simvars.Util
                         Longitude = Longitude,
                         Speed = Speed
                     });
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.ObjectId, 0, aircraft.GetWayPointObjectArray());
+                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
+                }
+                else
+                {
+                    PositionData position = new PositionData
+                    {
+                        Latitude = aircraft.Latitude,
+                        Longitude = aircraft.Longitude,
+                        Altitude = aircraft.Altimeter,
+                        Heading = aircraft.Heading,
+                        Pitch = 0,
+                        Bank = 0,
+                        Airspeed = (uint)aircraft.Speed,
+                        OnGround = (uint)(aircraft.IsGrounded ? 1 : 0)
+                    };
+                    Console.WriteLine("Updating a grounded plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading);
+                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
             }
 
