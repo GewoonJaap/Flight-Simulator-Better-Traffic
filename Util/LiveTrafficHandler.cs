@@ -40,10 +40,12 @@ namespace Simvars.Util
 
         private void ParsePlaneData(JObject planeData)
         {
+            List<String> flightRadarIds = new List<string>();
             foreach (JProperty property in planeData.Properties())
             {
                 //Determine if object is a plane, we only want planes from the api, not the other stat keys ;)
                 if (!char.IsDigit(property.Name.ToCharArray()[0])) continue;
+                flightRadarIds.Add(property.Name);
 
                 Aircraft aircraft = _liveTrafficAircraft.FirstOrDefault(item => item.FlightRadarId == property.Name);
 
@@ -102,7 +104,7 @@ namespace Simvars.Util
                     _liveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
                 }
-                else
+                else //if (aircraft.Longitude != Longitude || aircraft.Latitude != Latitude || aircraft.Altimeter != Altimeter || aircraft.Speed != Speed)
                 {
                     aircraft.Latitude = Latitude;
                     aircraft.Longitude = Longitude;
@@ -111,19 +113,47 @@ namespace Simvars.Util
                     aircraft.Speed = Speed;
                     aircraft.IsGrounded = isGrounded;
 
-                    PositionData position;
-                    position.Latitude = aircraft.Latitude;
-                    position.Longitude = aircraft.Longitude;
-                    position.Altitude = aircraft.Altimeter;
-                    position.Heading = aircraft.Heading;
-                    position.Pitch = 0;
-                    position.Bank = 0;
-                    position.Airspeed = (uint)aircraft.Speed;
-                    position.OnGround = (uint)(aircraft.IsGrounded ? 1 : 0);
+                    // Old location updating code PositionData position; position.Latitude =
+                    // aircraft.Latitude; position.Longitude = aircraft.Longitude; position.Altitude
+                    // = aircraft.Altimeter; position.Heading = aircraft.Heading; position.Pitch =
+                    // 0; position.Bank = 0; position.Airspeed = (uint)aircraft.Speed;
+                    // position.OnGround = (uint)(aircraft.IsGrounded ? 1 : 0);
                     Console.WriteLine("Updating a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading);
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.planeLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                    // _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation,
+                    // aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+
+                    aircraft.Waypoints.Add(new Waypoint()
+                    {
+                        Altitude = Altimeter,
+                        IsGrounded = isGrounded,
+                        Latitude = Latitude,
+                        Longitude = Longitude,
+                        Speed = Speed
+                    });
+                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.ObjectId, 0, aircraft.GetWayPointObjectArray());
                 }
             }
+
+            DespawnOldPlanes(flightRadarIds);
+        }
+
+        private void DespawnOldPlanes(List<string> flightradarIds)
+        {
+            List<Aircraft> removedPlanes = new List<Aircraft>();
+            _liveTrafficAircraft.ForEach(plane =>
+            {
+                if (flightradarIds.Contains(plane.FlightRadarId)) return;
+
+                var requestId = DataRequests.AI_SPAWN + _requestCount;
+                Console.WriteLine(@"Deleting a plane " + plane.TailNumber + " request ID: " + _requestCount);
+                _requestCount = (_requestCount + 1) % 10000;
+                _simConnect.AIRemoveObject(plane.ObjectId, requestId);
+                removedPlanes.Add(plane);
+            });
+            removedPlanes.ForEach(plane =>
+            {
+                _liveTrafficAircraft.Remove(plane);
+            });
         }
 
         private void SpawnPlane(Aircraft aircraft)

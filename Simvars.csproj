@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="Model\Aircraft.cs" />
     <Compile Include="Model\PlayerAircraft.cs" />
+    <Compile Include="Model\Waypoint.cs" />
     <Compile Include="SimvarsViewModel.cs" />
     <Compile Include="Struct\PlayerAircraftStruct.cs" />
     <Compile Include="Struct\PositionData.cs" />
