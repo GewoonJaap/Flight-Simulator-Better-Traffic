@@ -354,6 +354,7 @@ namespace Simvars
                 /// Catch a simobject data request
                 m_oSimConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
                 m_oSimConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(simconnect_OnRecvSimobjectData);
+                m_oSimConnect.OnRecvWaypointList += new SimConnect.RecvWaypointListEventHandler(simconnect_OnRecvWaypointList);
 
                 _liveTrafficHandler = new LiveTrafficHandler(m_oSimConnect);
             }
@@ -423,6 +424,11 @@ namespace Simvars
             Console.WriteLine("SimConnect_OnRecvException: " + eException.ToString());
 
             lErrorMessages.Add("SimConnect : " + eException.ToString());
+        }
+
+        private void simconnect_OnRecvWaypointList(SimConnect sender, SIMCONNECT_RECV_WAYPOINT_LIST simconnectRecvWaypointList)
+        {
+            Console.WriteLine("Got waypoint list");
         }
 
         private void simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)

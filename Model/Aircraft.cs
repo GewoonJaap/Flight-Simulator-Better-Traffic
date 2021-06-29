@@ -44,22 +44,24 @@ namespace Simvars.Model
         public SIMCONNECT_DATA_WAYPOINT[] GetSimConnectDataWaypoints()
         {
             SIMCONNECT_DATA_WAYPOINT[] result = new SIMCONNECT_DATA_WAYPOINT[Waypoints.Count];
-            if(Waypoints.Count == 0) Console.WriteLine("Trying to generate a waypoint but I have no waypoint data! " + Callsign);
+            if (Waypoints.Count == 0) Console.WriteLine("Trying to generate a waypoint but I have no waypoint data! " + Callsign);
             for (int i = 0; i < Waypoints.Count; i++)
             {
                 if (Waypoints[i].IsGrounded)
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND);
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND);
                 }
                 else
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED);
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
                 }
                 result[i].Altitude = Waypoints[i].Altitude;
                 result[i].Latitude = Waypoints[i].Latitude;
                 result[i].Longitude = Waypoints[i].Longitude;
                 result[i].ktsSpeed = Waypoints[i].Speed;
+                Console.WriteLine("Setting waypoint " + i + " for " + TailNumber + " lat " + result[i].Latitude + " long " + result[i].Longitude);
             }
+
             Waypoints.RemoveAt(0);
 
             return result;
@@ -68,6 +70,14 @@ namespace Simvars.Model
         public object[] GetWayPointObjectArray()
         {
             var dataWaypoints = GetSimConnectDataWaypoints();
+
+            SIMCONNECT_DATA_WAYPOINT[] wp = new SIMCONNECT_DATA_WAYPOINT[1];
+
+            wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND);
+            wp[0].Altitude = 0;
+            wp[0].Latitude = 51.95473;
+            wp[0].Longitude = 4.435475;
+            wp[0].ktsSpeed = 0;
 
             var obj = new Object[dataWaypoints.Length];
             dataWaypoints.CopyTo(obj, 0);

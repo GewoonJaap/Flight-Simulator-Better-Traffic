@@ -99,6 +99,35 @@ namespace Simvars.Util
                         AirportOrigin = AirportOrigin,
                         AirportDestination = AirportDestination,
                     };
+
+                    try
+                    {
+                        var trails = (JArray)extraData["trail"];
+                        var i = 0;
+                        if (trails.Count > 4) i = trails.Count - 3;
+                        for (var index = i; index < trails.Count; index++)
+                        {
+                            aircraft.Waypoints.Add(new Waypoint()
+                            {
+                                Altitude = (int)trails[index]["alt"],
+                                IsGrounded = (int)trails[index]["alt"] == 0,
+                                Latitude = (double)trails[index]["lat"],
+                                Longitude = (double)trails[index]["lng"],
+                                Speed = (int)trails[index]["spd"]
+                            });
+                        }
+
+                        aircraft.Longitude = (double)trails[i]["lng"];
+                        aircraft.Latitude = (double)trails[i]["lat"];
+                        aircraft.Speed = (int)trails[i]["spd"];
+                        aircraft.Altimeter = (int)trails[i]["alt"];
+                        aircraft.Heading = (int)trails[i]["hd"];
+                    }
+                    catch (Exception e)
+                    {
+                        // ignored
+                    }
+
                     aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.Model, aircraft.Airline);
 
                     _liveTrafficAircraft.Add(aircraft);
@@ -112,7 +141,7 @@ namespace Simvars.Util
                 aircraft.Heading = Heading;
                 aircraft.Speed = Speed;
                 aircraft.IsGrounded = isGrounded;
-                if (!aircraft.IsGrounded)
+                if (!aircraft.IsGrounded || aircraft.IsGrounded)
                 {
                     Console.WriteLine("Updating a flying plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading);
 
@@ -124,6 +153,9 @@ namespace Simvars.Util
                         Longitude = Longitude,
                         Speed = Speed
                     });
+                    var requestId = DataRequests.AI_SPAWN + _requestCount;
+                    _requestCount = (_requestCount + 1) % 10000;
+                    _simConnect.AIReleaseControl(aircraft.ObjectId, requestId);
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
                 }
                 else
