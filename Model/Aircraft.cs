@@ -59,7 +59,7 @@ namespace Simvars.Model
                 result[i].Latitude = Waypoints[i].Latitude;
                 result[i].Longitude = Waypoints[i].Longitude;
                 result[i].ktsSpeed = Waypoints[i].Speed;
-                Console.WriteLine("Setting waypoint " + i + " for " + TailNumber + " lat " + result[i].Latitude + " long " + result[i].Longitude);
+                Console.WriteLine("Setting waypoint " + i + " for " + TailNumber + " lat " + result[i].Latitude + " long " + result[i].Longitude + " speed " + result[i].ktsSpeed + "  altitude " + result[i].Altitude);
             }
 
             Waypoints.RemoveAt(0);

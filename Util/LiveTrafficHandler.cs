@@ -141,7 +141,7 @@ namespace Simvars.Util
                 aircraft.Heading = Heading;
                 aircraft.Speed = Speed;
                 aircraft.IsGrounded = isGrounded;
-                if (!aircraft.IsGrounded || aircraft.IsGrounded)
+                if (!aircraft.IsGrounded)
                 {
                     Console.WriteLine("Updating a flying plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading);
 
