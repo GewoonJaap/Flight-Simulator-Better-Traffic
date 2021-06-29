@@ -6,7 +6,7 @@ using Simvars.Emum;
 
 namespace Simvars.Model
 {
-    internal class Aircraft
+    public class Aircraft
     {
         #region SimData
 
@@ -59,7 +59,7 @@ namespace Simvars.Model
                 result[i].Latitude = Waypoints[i].Latitude;
                 result[i].Longitude = Waypoints[i].Longitude;
                 result[i].ktsSpeed = Waypoints[i].Speed;
-                Console.WriteLine("Setting waypoint " + i + " for " + TailNumber + " lat " + result[i].Latitude + " long " + result[i].Longitude + " speed " + result[i].ktsSpeed + "  altitude " + result[i].Altitude);
+                Console.WriteLine("Setting waypoint " + i + " for " + TailNumber + " lat " + result[i].Latitude + " long " + result[i].Longitude + " speed " + result[i].ktsSpeed + "  altitude " + result[i].Altitude + " objectId " + ObjectId);
             }
 
             Waypoints.RemoveAt(0);
@@ -79,8 +79,8 @@ namespace Simvars.Model
             wp[0].Longitude = 4.435475;
             wp[0].ktsSpeed = 0;
 
-            var obj = new Object[dataWaypoints.Length];
-            dataWaypoints.CopyTo(obj, 0);
+            var obj = new Object[wp.Length];
+            wp.CopyTo(obj, 0);
             return obj;
         }
     }

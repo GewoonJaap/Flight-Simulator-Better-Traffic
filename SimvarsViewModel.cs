@@ -311,6 +311,7 @@ namespace Simvars
         private LiveTrafficHandler _liveTrafficHandler;
 
         private Timer _dataTimer;
+        private bool clicked = false;
 
         public SimvarsViewModel()
         {
@@ -324,11 +325,52 @@ namespace Simvars
             cmdAddRequest = new BaseCommand((p) => { AddRequest((m_iIndexRequest == 0) ? m_sSimvarRequest : (m_sSimvarRequest + ":" + m_iIndexRequest), sUnitRequest, bIsString); });
             cmdRemoveSelectedRequest = new BaseCommand((p) => { RemoveSelectedRequest(); });
             cmdTrySetValue = new BaseCommand((p) => { TrySetValue(); });
-            cmdLoadFiles = new BaseCommand((p) => { LoadFiles(); });
+            cmdLoadFiles = new BaseCommand((p) => { ChangeWayPoint(); });
             cmdSaveFile = new BaseCommand((p) => { SaveFile(false); });
 
             m_oTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
             m_oTimer.Tick += new EventHandler(OnTick);
+        }
+
+        private void ChangeWayPoint()
+        {
+            _liveTrafficHandler._liveTrafficAircraft.ForEach(item =>
+            {
+                Console.WriteLine("Setting waypoint manual objectId " + item.ObjectId);
+                if (!clicked)
+                {
+                    Console.WriteLine("Going to eindhoven");
+                    SIMCONNECT_DATA_WAYPOINT[] wp = new SIMCONNECT_DATA_WAYPOINT[1];
+
+                    wp[0].Flags = (uint) (SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+                    wp[0].Altitude = 0;
+                    wp[0].Latitude = 51.452165;
+                    wp[0].Longitude = 5.376859;
+                    wp[0].ktsSpeed = 0;
+
+                    var obj = new Object[wp.Length];
+                    wp.CopyTo(obj, 0);
+                    m_oSimConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, item.ObjectId,
+                        SIMCONNECT_DATA_SET_FLAG.DEFAULT, obj);
+                }
+                else
+                {
+                    Console.WriteLine("Going to Live Location");
+                    SIMCONNECT_DATA_WAYPOINT[] wp = new SIMCONNECT_DATA_WAYPOINT[1];
+
+                    wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+                    wp[0].Altitude = item.Altimeter;
+                    wp[0].Latitude = item.Latitude;
+                    wp[0].Longitude = item.Longitude;
+                    wp[0].ktsSpeed = item.Speed;
+
+                    var obj = new Object[wp.Length];
+                    wp.CopyTo(obj, 0);
+                    m_oSimConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, item.ObjectId,
+                        SIMCONNECT_DATA_SET_FLAG.DEFAULT, obj);
+                }
+            });
+            clicked = !clicked;
         }
 
         private void Connect()
@@ -354,7 +396,6 @@ namespace Simvars
                 /// Catch a simobject data request
                 m_oSimConnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
                 m_oSimConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(simconnect_OnRecvSimobjectData);
-                m_oSimConnect.OnRecvWaypointList += new SimConnect.RecvWaypointListEventHandler(simconnect_OnRecvWaypointList);
 
                 _liveTrafficHandler = new LiveTrafficHandler(m_oSimConnect);
             }
@@ -424,11 +465,6 @@ namespace Simvars
             Console.WriteLine("SimConnect_OnRecvException: " + eException.ToString());
 
             lErrorMessages.Add("SimConnect : " + eException.ToString());
-        }
-
-        private void simconnect_OnRecvWaypointList(SimConnect sender, SIMCONNECT_RECV_WAYPOINT_LIST simconnectRecvWaypointList)
-        {
-            Console.WriteLine("Got waypoint list");
         }
 
         private void simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
