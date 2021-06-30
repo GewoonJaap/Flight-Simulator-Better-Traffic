@@ -52,7 +52,7 @@ namespace Simvars.Util
                 double Longitude = (double)property.Value[2];
                 double Latitude = (double)property.Value[1];
                 int Heading = (int)property.Value[3];
-                double Altimeter = (int)property.Value[4] / 0.3048;
+                double Altimeter = (int)property.Value[4] * 0.3048;
                 int Speed = (int)property.Value[5];
                 string Callsign = (string)property.Value[16];
                 bool isGrounded = (bool)property.Value[14];
@@ -109,7 +109,7 @@ namespace Simvars.Util
                         {
                             aircraft.Waypoints.Add(new Waypoint()
                             {
-                                Altitude = (int)trails[index]["alt"] / 0.3048,
+                                Altitude = (int)trails[index]["alt"] * 0.3048,
                                 IsGrounded = (int)trails[index]["alt"] == 0,
                                 Latitude = (double)trails[index]["lat"],
                                 Longitude = (double)trails[index]["lng"],
@@ -120,7 +120,7 @@ namespace Simvars.Util
                         aircraft.Longitude = (double)trails[i]["lng"];
                         aircraft.Latitude = (double)trails[i]["lat"];
                         aircraft.Speed = (int)trails[i]["spd"];
-                        aircraft.Altimeter = (int)trails[i]["alt"] / 0.3048;
+                        aircraft.Altimeter = (int)trails[i]["alt"] * 0.3048;
                         aircraft.Heading = (int)trails[i]["hd"];
                     }
                     catch (Exception e)
