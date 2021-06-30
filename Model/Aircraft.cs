@@ -30,7 +30,7 @@ namespace Simvars.Model
 
         public double Latitude;
         public double Longitude;
-        public int Altimeter;
+        public double Altimeter;
         public int Speed;
         public int Heading;
         public bool IsGrounded;
@@ -49,11 +49,11 @@ namespace Simvars.Model
             {
                 if (Waypoints[i].IsGrounded)
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND);
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
                 }
                 else
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
                 }
                 result[i].Altitude = Waypoints[i].Altitude;
                 result[i].Latitude = Waypoints[i].Latitude;
@@ -79,8 +79,8 @@ namespace Simvars.Model
             wp[0].Longitude = 4.435475;
             wp[0].ktsSpeed = 0;
 
-            var obj = new Object[wp.Length];
-            wp.CopyTo(obj, 0);
+            var obj = new Object[dataWaypoints.Length];
+            dataWaypoints.CopyTo(obj, 0);
             return obj;
         }
     }

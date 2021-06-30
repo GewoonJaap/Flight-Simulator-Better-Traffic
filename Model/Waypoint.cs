@@ -4,7 +4,7 @@
     {
         public double Latitude;
         public double Longitude;
-        public int Altitude;
+        public double Altitude;
         public int Speed;
         public bool IsGrounded;
     }
