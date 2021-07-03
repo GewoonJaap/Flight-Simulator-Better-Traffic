@@ -14,7 +14,7 @@ namespace Simvars.Util
         public List<Aircraft> LiveTrafficAircraft;
         private readonly SimConnect _simConnect;
         private int _requestCount = 0;
-        private const int MaxPlanes = 30;
+        private const int MaxPlanes = 40;
 
         public LiveTrafficHandler(SimConnect simConnect)
         {
