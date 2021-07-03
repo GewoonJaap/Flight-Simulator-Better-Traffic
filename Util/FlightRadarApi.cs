@@ -6,7 +6,7 @@ namespace Simvars.Util
     public static class FlightRadarApi
     {
         private const double LongitudeModifier = 0.3;
-        private const double LatitudeModifier = 1;
+        private const double LatitudeModifier = 0.5;
 
         public static JObject GetAircraftData(string flightRadarId)
         {
