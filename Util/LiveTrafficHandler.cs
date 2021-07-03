@@ -11,13 +11,14 @@ namespace Simvars.Util
 {
     public class LiveTrafficHandler
     {
-        public List<Aircraft> _liveTrafficAircraft;
+        public List<Aircraft> LiveTrafficAircraft;
         private readonly SimConnect _simConnect;
         private int _requestCount = 0;
+        private const int MaxPlanes = 30;
 
         public LiveTrafficHandler(SimConnect simConnect)
         {
-            _liveTrafficAircraft = new List<Aircraft>();
+            LiveTrafficAircraft = new List<Aircraft>();
             _simConnect = simConnect;
         }
 
@@ -30,7 +31,7 @@ namespace Simvars.Util
 
         public void SetObjectId(uint requestId, uint objectId)
         {
-            Aircraft aircraft = _liveTrafficAircraft.FirstOrDefault(item => item.RequestId == requestId);
+            Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.RequestId == requestId);
             if (aircraft != null)
             {
                 Console.WriteLine("Setting object ID for: " + aircraft.Callsign);
@@ -47,7 +48,7 @@ namespace Simvars.Util
                 if (!char.IsDigit(property.Name.ToCharArray()[0])) continue;
                 flightRadarIds.Add(property.Name);
 
-                Aircraft aircraft = _liveTrafficAircraft.FirstOrDefault(item => item.FlightRadarId == property.Name);
+                Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.FlightRadarId == property.Name);
 
                 double Longitude = (double)property.Value[2];
                 double Latitude = (double)property.Value[1];
@@ -64,6 +65,7 @@ namespace Simvars.Util
 
                 if (aircraft == null)
                 {
+                    if(LiveTrafficAircraft.Count >= MaxPlanes) continue;
                     JObject extraData = FlightRadarApi.GetAircraftData(property.Name);
                     if ((bool)extraData["success"])
                     {
@@ -130,7 +132,7 @@ namespace Simvars.Util
 
                     aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.Model, aircraft.Airline);
 
-                    _liveTrafficAircraft.Add(aircraft);
+                    LiveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
                     continue;
                 }
@@ -167,9 +169,11 @@ namespace Simvars.Util
                         Pitch = 0,
                         Bank = 0,
                         Airspeed = (uint)aircraft.Speed,
-                        OnGround = (uint)(aircraft.IsGrounded ? 1 : 0)
+                        OnGround = 0
                     };
                     Console.WriteLine("Updating a grounded plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading + " objectId " + aircraft.ObjectId);
+                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints,
+                        aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
             }
@@ -180,7 +184,7 @@ namespace Simvars.Util
         private void DespawnOldPlanes(List<string> flightradarIds)
         {
             List<Aircraft> removedPlanes = new List<Aircraft>();
-            _liveTrafficAircraft.ForEach(plane =>
+            LiveTrafficAircraft.ForEach(plane =>
             {
                 if (flightradarIds.Contains(plane.FlightRadarId)) return;
 
@@ -192,7 +196,7 @@ namespace Simvars.Util
             });
             removedPlanes.ForEach(plane =>
             {
-                _liveTrafficAircraft.Remove(plane);
+                LiveTrafficAircraft.Remove(plane);
             });
         }
 
@@ -210,7 +214,7 @@ namespace Simvars.Util
                 Pitch = 0,
                 Bank = 0,
                 Heading = aircraft.Heading,
-                OnGround = (uint)(aircraft.IsGrounded ? 1 : 0),
+                OnGround = (uint) (aircraft.IsGrounded ? 0 : 1),
                 Airspeed = (uint)aircraft.Speed,
             };
             _simConnect.AICreateNonATCAircraft(aircraft.MatchedModel, aircraft.TailNumber, position, requestId);

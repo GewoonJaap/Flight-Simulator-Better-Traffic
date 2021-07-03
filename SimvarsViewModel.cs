@@ -334,7 +334,7 @@ namespace Simvars
 
         private void ChangeWayPoint()
         {
-            _liveTrafficHandler._liveTrafficAircraft.ForEach(item =>
+            _liveTrafficHandler.LiveTrafficAircraft.ForEach(item =>
             {
                 Console.WriteLine("Setting waypoint manual objectId " + item.ObjectId);
                 if (!clicked)
@@ -342,7 +342,7 @@ namespace Simvars
                     Console.WriteLine("Going to eindhoven");
                     SIMCONNECT_DATA_WAYPOINT[] wp = new SIMCONNECT_DATA_WAYPOINT[1];
 
-                    wp[0].Flags = (uint) (SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+                    wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
                     wp[0].Altitude = 0;
                     wp[0].Latitude = 51.452165;
                     wp[0].Longitude = 5.376859;

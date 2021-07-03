@@ -69,18 +69,25 @@ namespace Simvars.Model
 
         public object[] GetWayPointObjectArray()
         {
-            var dataWaypoints = GetSimConnectDataWaypoints();
+            //var dataWaypoints = GetSimConnectDataWaypoints();
 
             SIMCONNECT_DATA_WAYPOINT[] wp = new SIMCONNECT_DATA_WAYPOINT[1];
 
-            wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND);
-            wp[0].Altitude = 0;
-            wp[0].Latitude = 51.95473;
-            wp[0].Longitude = 4.435475;
-            wp[0].ktsSpeed = 0;
+            if (IsGrounded)
+            {
+                wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+            }
+            else
+            {
+                wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+            }
+            wp[0].Altitude = Altimeter;
+            wp[0].Latitude = Latitude;
+            wp[0].Longitude = Longitude;
+            wp[0].ktsSpeed = Speed;
 
-            var obj = new Object[dataWaypoints.Length];
-            dataWaypoints.CopyTo(obj, 0);
+            var obj = new Object[wp.Length];
+            wp.CopyTo(obj, 0);
             return obj;
         }
     }
