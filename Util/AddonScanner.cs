@@ -31,9 +31,10 @@ namespace Simvars.Util
             foreach (string addonDirectory in addonDirectories)
             {
                 string finalDirectory = addonDirectory;
-                if (!Directory.Exists(addonDirectory + "\\manifest.json")) continue;
+                if (!File.Exists(addonDirectory + "\\manifest.json")) continue;
 
                 JObject manifest = JObject.Parse(File.ReadAllText(addonDirectory + "\\manifest.json"));
+                Console.WriteLine(addonDirectory + "\\manifest.json");
                 if (((string)manifest["content_type"])?.ToLower() != "aircraft") continue;
                 finalDirectory += "\\SimObjects\\Airplanes";
 
@@ -42,7 +43,7 @@ namespace Simvars.Util
                 string[] airplaneDirectories = Directory.GetDirectories(finalDirectory);
                 finalDirectory = airplaneDirectories[0] + "\\aircraft.cfg";
 
-                if (!Directory.Exists(finalDirectory)) continue;
+                if (!File.Exists(finalDirectory)) continue;
 
                 liveries.AddRange(ParseCfg(finalDirectory));
             }
