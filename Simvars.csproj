@@ -95,8 +95,8 @@
     <Compile Include="Struct\PositionData.cs" />
     <Compile Include="textsimvars.cs" />
     <Compile Include="units.cs" />
+    <Compile Include="Util\AddonScanner.cs" />
     <Compile Include="Util\ApiRequest.cs" />
-    <Compile Include="Util\FlightPlanFetcher.cs" />
     <Compile Include="Util\FlightRadarApi.cs" />
     <Compile Include="Util\LiveTrafficHandler.cs" />
     <Compile Include="Util\ModelMatching.cs" />
