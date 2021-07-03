@@ -8,13 +8,17 @@ using System.Windows.Navigation;
 
 namespace Simvars
 {
-    interface IBaseSimConnectWrapper
+    internal interface IBaseSimConnectWrapper
     {
         int GetUserSimConnectWinEvent();
+
         void ReceiveSimConnectMessage();
+
         void SetWindowHandle(IntPtr _hWnd);
+
         void Disconnect();
     }
+
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -69,7 +73,7 @@ namespace Simvars
             string sText = e.Text;
             foreach (char c in sText)
             {
-                if ( ! (('0' <= c && c <= '9') || c == '+' || c == '-' || c == ',') )
+                if (!(('0' <= c && c <= '9') || c == '+' || c == '-' || c == ','))
                 {
                     e.Handled = true;
                     break;

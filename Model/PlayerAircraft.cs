@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Simvars.Struct;
+using System;
 using System.Collections.Generic;
-using Simvars.Struct;
 
 namespace Simvars.Model
 {

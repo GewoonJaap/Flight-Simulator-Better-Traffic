@@ -13,7 +13,7 @@
     <Window.Resources>
         <ObjectDataProvider x:Key="SimObjectTypeFromEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="simco:SIMCONNECT_SIMOBJECT_TYPE"/>
+                <x:Type TypeName="simco:SIMCONNECT_SIMOBJECT_TYPE" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <CollectionViewSource x:Key="AlphaSortedSimvarNames" Source="{Binding aSimvarNames}">
@@ -35,15 +35,15 @@
             </Hyperlink>
         </TextBlock>
         <TextBlock Margin="10,33,546,613" Width="236" VerticalAlignment="Top" HorizontalAlignment="Left" Height="23">
-            <Hyperlink x:Name="hl_SimVariables" NavigateUri="https://msdn.microsoft.com/en-us/library/cc526981.aspx" RequestNavigate="LinkOnRequestNavigate" >
+            <Hyperlink x:Name="hl_SimVariables" NavigateUri="https://msdn.microsoft.com/en-us/library/cc526981.aspx" RequestNavigate="LinkOnRequestNavigate">
                 Simulation Variables Reference
             </Hyperlink>
         </TextBlock>
 
-        <Button x:Name="btn_Connection" Content="{Binding sConnectButtonLabel}" Command="{Binding cmdToggleConnect}" HorizontalAlignment="Left" Margin="29,68,0,0" VerticalAlignment="Top" Width="146" Height="48"/>
-        <Button x:Name="btn_LoadFile" Content="Load File" Command="{Binding cmdLoadFiles}" HorizontalAlignment="Left" Margin="29,156,0,0" VerticalAlignment="Top" Width="100" Height="23" RenderTransformOrigin="0.423,0.841"/>
-        <Button x:Name="btn_SaveFile" Content="Save File" Command="{Binding cmdSaveFile}" HorizontalAlignment="Left" Margin="148,156,0,0" VerticalAlignment="Top" Width="100" Height="23"/>
-        <CheckBox Content="Save values" IsChecked="{Binding bSaveValues, Mode=TwoWay}" HorizontalAlignment="Left" Margin="167,184,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.597,0.489"/>
+        <Button x:Name="btn_Connection" Content="{Binding sConnectButtonLabel}" Command="{Binding cmdToggleConnect}" HorizontalAlignment="Left" Margin="29,68,0,0" VerticalAlignment="Top" Width="146" Height="48" />
+        <Button x:Name="btn_LoadFile" Content="Load File" Command="{Binding cmdLoadFiles}" HorizontalAlignment="Left" Margin="29,156,0,0" VerticalAlignment="Top" Width="100" Height="23" RenderTransformOrigin="0.423,0.841" />
+        <Button x:Name="btn_SaveFile" Content="Save File" Command="{Binding cmdSaveFile}" HorizontalAlignment="Left" Margin="148,156,0,0" VerticalAlignment="Top" Width="100" Height="23" />
+        <CheckBox Content="Save values" IsChecked="{Binding bSaveValues, Mode=TwoWay}" HorizontalAlignment="Left" Margin="167,184,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.597,0.489" />
 
         <ListView x:Name="lv_Simvars" ItemsSource="{Binding lSimvarRequests}" SelectedItem="{Binding oSelectedSimvarRequest, Mode=OneWayToSource}" Margin="270,10,10,10">
             <ListView.ItemContainerStyle>
@@ -62,30 +62,30 @@
             </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Simvar" Width="200" DisplayMemberBinding="{Binding sName}"/>
-                    <GridViewColumn Header="Value" Width="150" DisplayMemberBinding="{Binding sValue}"/>
-                    <GridViewColumn Header="Units" Width="150" DisplayMemberBinding="{Binding sUnits}"/>
+                    <GridViewColumn Header="Simvar" Width="200" DisplayMemberBinding="{Binding sName}" />
+                    <GridViewColumn Header="Value" Width="150" DisplayMemberBinding="{Binding sValue}" />
+                    <GridViewColumn Header="Units" Width="150" DisplayMemberBinding="{Binding sUnits}" />
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <Label Content="SimObject" HorizontalAlignment="Left" Margin="10,208,0,0" VerticalAlignment="Top" Height="23" Width="83"/>
-        <ComboBox x:Name="cbb_SimObjectType" ItemsSource="{Binding Source={StaticResource SimObjectTypeFromEnum}}" SelectedValue="{Binding eSimObjectType, Mode=OneWayToSource}" SelectedIndex="0" HorizontalAlignment="Left" Margin="11,231,0,0" VerticalAlignment="Top" Width="119" Height="23"/>
-        <Label Content="ObjectID" HorizontalAlignment="Left" Margin="165,208,0,0" VerticalAlignment="Top" Height="23" Width="71"/>
-        <ComboBox x:Name="cbb_ObjectIds" ItemsSource="{Binding lObjectIDs}" SelectedValue="{Binding iObjectIdRequest, Mode=OneWayToSource}" IsEnabled="{Binding bObjectIDSelectionEnabled}" SelectedIndex="0" HorizontalAlignment="Left" Margin="165,231,0,0" VerticalAlignment="Top" Width="48" Height="23"/>
+        <Label Content="SimObject" HorizontalAlignment="Left" Margin="10,208,0,0" VerticalAlignment="Top" Height="23" Width="83" />
+        <ComboBox x:Name="cbb_SimObjectType" ItemsSource="{Binding Source={StaticResource SimObjectTypeFromEnum}}" SelectedValue="{Binding eSimObjectType, Mode=OneWayToSource}" SelectedIndex="0" HorizontalAlignment="Left" Margin="11,231,0,0" VerticalAlignment="Top" Width="119" Height="23" />
+        <Label Content="ObjectID" HorizontalAlignment="Left" Margin="165,208,0,0" VerticalAlignment="Top" Height="23" Width="71" />
+        <ComboBox x:Name="cbb_ObjectIds" ItemsSource="{Binding lObjectIDs}" SelectedValue="{Binding iObjectIdRequest, Mode=OneWayToSource}" IsEnabled="{Binding bObjectIDSelectionEnabled}" SelectedIndex="0" HorizontalAlignment="Left" Margin="165,231,0,0" VerticalAlignment="Top" Width="48" Height="23" />
 
-        <Label Content="Simvar Name" HorizontalAlignment="Left" Margin="10,259,0,0" VerticalAlignment="Top" Height="23" Width="83"/>
-        <ComboBox x:Name="cbb_SimvarNames" ItemsSource="{Binding Source={StaticResource AlphaSortedSimvarNames}}" SelectedValue="{Binding sSimvarRequest, Mode=OneWayToSource}" SelectedIndex="0" HorizontalAlignment="Left" Margin="10,282,0,0" VerticalAlignment="Top" Width="238" Height="23"/>
-        <Label Content="Index" HorizontalAlignment="Left" Margin="10,310,0,0" VerticalAlignment="Top" Height="23" Width="71"/>
-        <ComboBox x:Name="cbb_Indices" ItemsSource="{Binding aIndices}" SelectedValue="{Binding iIndexRequest, Mode=OneWayToSource}" SelectedIndex="0" HorizontalAlignment="Left" Margin="10,333,0,0" VerticalAlignment="Top" Width="45" Height="23"/>
-        <Label Content="Units" HorizontalAlignment="Left" Margin="70,310,0,0" VerticalAlignment="Top" Height="23" Width="83"/>
-        <ComboBox x:Name="cbb_UnitNames" ItemsSource="{Binding Source={StaticResource AlphaSortedUnitNames}}" SelectedValue="{Binding sUnitRequest, Mode=OneWayToSource}" SelectedIndex="0" HorizontalAlignment="Left" Margin="70,333,0,0" VerticalAlignment="Top" Width="178" Height="23"/>
+        <Label Content="Simvar Name" HorizontalAlignment="Left" Margin="10,259,0,0" VerticalAlignment="Top" Height="23" Width="83" />
+        <ComboBox x:Name="cbb_SimvarNames" ItemsSource="{Binding Source={StaticResource AlphaSortedSimvarNames}}" SelectedValue="{Binding sSimvarRequest, Mode=OneWayToSource}" SelectedIndex="0" HorizontalAlignment="Left" Margin="10,282,0,0" VerticalAlignment="Top" Width="238" Height="23" />
+        <Label Content="Index" HorizontalAlignment="Left" Margin="10,310,0,0" VerticalAlignment="Top" Height="23" Width="71" />
+        <ComboBox x:Name="cbb_Indices" ItemsSource="{Binding aIndices}" SelectedValue="{Binding iIndexRequest, Mode=OneWayToSource}" SelectedIndex="0" HorizontalAlignment="Left" Margin="10,333,0,0" VerticalAlignment="Top" Width="45" Height="23" />
+        <Label Content="Units" HorizontalAlignment="Left" Margin="70,310,0,0" VerticalAlignment="Top" Height="23" Width="83" />
+        <ComboBox x:Name="cbb_UnitNames" ItemsSource="{Binding Source={StaticResource AlphaSortedUnitNames}}" SelectedValue="{Binding sUnitRequest, Mode=OneWayToSource}" SelectedIndex="0" HorizontalAlignment="Left" Margin="70,333,0,0" VerticalAlignment="Top" Width="178" Height="23" />
         <Button x:Name="btn_Request" Content="Add request &gt;" Command="{Binding cmdAddRequest}" HorizontalAlignment="Left" Margin="158,370,0,0" VerticalAlignment="Top" Width="90" Height="23
-                "/>
+                " />
 
-        <Label Content="Value" HorizontalAlignment="Left" Margin="10,396,0,0" VerticalAlignment="Top" Height="23" Width="83"/>
-        <TextBox x:Name="tb_SetValue" PreviewTextInput="NumberValidationTextBox" Text="{Binding sSetValue, Mode=OneWayToSource}" HorizontalAlignment="Left" Height="23" Margin="10,419,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <Button x:Name="btn_TrySetValue" Content="Try set value &gt;" Command="{Binding cmdTrySetValue}" IsEnabled="{Binding bConnected}" HorizontalAlignment="Left" Margin="158,419,0,0" VerticalAlignment="Top" Width="90" Height="23"/>
+        <Label Content="Value" HorizontalAlignment="Left" Margin="10,396,0,0" VerticalAlignment="Top" Height="23" Width="83" />
+        <TextBox x:Name="tb_SetValue" PreviewTextInput="NumberValidationTextBox" Text="{Binding sSetValue, Mode=OneWayToSource}" HorizontalAlignment="Left" Height="23" Margin="10,419,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" />
+        <Button x:Name="btn_TrySetValue" Content="Try set value &gt;" Command="{Binding cmdTrySetValue}" IsEnabled="{Binding bConnected}" HorizontalAlignment="Left" Margin="158,419,0,0" VerticalAlignment="Top" Width="90" Height="23" />
 
         <Ellipse HorizontalAlignment="Left" Height="14" Margin="251,10,0,0" Stroke="Black" VerticalAlignment="Top" Width="14">
             <Ellipse.Style>
@@ -106,26 +106,24 @@
             </Ellipse.Style>
         </Ellipse>
 
-        <Label Content="Errors" HorizontalAlignment="Left" Margin="10,454,0,0" VerticalAlignment="Top" Height="23" Width="83"/>
+        <Label Content="Errors" HorizontalAlignment="Left" Margin="10,454,0,0" VerticalAlignment="Top" Height="23" Width="83" />
 
         <ListBox ItemsSource="{Binding lErrorMessages}" RenderTransformOrigin="0.5,0.5" Width="236" HorizontalAlignment="Left" Margin="10,482,0,10">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
-                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="Foreground" Value="Red" />
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel VerticalAlignment="Bottom"/>
+                    <VirtualizingStackPanel VerticalAlignment="Bottom" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
 
-        <Label Content="Frequency" HorizontalAlignment="Left" Margin="183,61,0,0" VerticalAlignment="Top" Height="25"/>
+        <Label Content="Frequency" HorizontalAlignment="Left" Margin="183,61,0,0" VerticalAlignment="Top" Height="25" />
         <Slider x:Name="sl_Tick" Value="1000" Thumb.DragCompleted="Slider_DragCompleted" HorizontalAlignment="Left" Margin="183,86,0,0" VerticalAlignment="Top" Width="63" Minimum="100" Maximum="3000" LargeChange="100" SmallChange="10" IsDirectionReversed="True" />
-        <CheckBox Content="Use FSX-compatible configuration" IsChecked="{Binding bFSXcompatible, Mode=TwoWay}" HorizontalAlignment="Left" Margin="29,121,0,0" VerticalAlignment="Top" Width="217"/>
-        <CheckBox Content="Is String" IsChecked="{Binding bIsString, Mode=TwoWay}" HorizontalAlignment="Left" Margin="11,375,0,0" VerticalAlignment="Top" Width="128"/>
-
+        <CheckBox Content="Use FSX-compatible configuration" IsChecked="{Binding bFSXcompatible, Mode=TwoWay}" HorizontalAlignment="Left" Margin="29,121,0,0" VerticalAlignment="Top" Width="217" />
+        <CheckBox Content="Is String" IsChecked="{Binding bIsString, Mode=TwoWay}" HorizontalAlignment="Left" Margin="11,375,0,0" VerticalAlignment="Top" Width="128" />
     </Grid>
-
 </Window>

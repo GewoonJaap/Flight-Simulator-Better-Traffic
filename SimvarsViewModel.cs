@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.FlightSimulator.SimConnect;
+using Simvars.Emum;
+using Simvars.Model;
+using Simvars.Struct;
+using Simvars.Util;
+using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Threading;
-
-using Microsoft.FlightSimulator.SimConnect;
-using Simvars.Emum;
-using Simvars.Model;
-using Simvars.Struct;
-using Simvars.Util;
 
 namespace Simvars
 {

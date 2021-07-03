@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.FlightSimulator.SimConnect;
+﻿using Microsoft.FlightSimulator.SimConnect;
 using Newtonsoft.Json.Linq;
 using Simvars.Emum;
 using Simvars.Model;
 using Simvars.Struct;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Simvars.Util
 {

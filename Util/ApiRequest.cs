@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http;
-using Newtonsoft.Json.Linq;
 
 namespace Simvars.Util
 {

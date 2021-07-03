@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
 using System.Windows.Input;
 
 namespace Simvars
@@ -46,6 +45,7 @@ namespace Simvars
     public class BaseCommand : ICommand
     {
         public Action<object> ExecuteDelegate { get; set; }
+
         public event EventHandler CanExecuteChanged = null;
 
         public BaseCommand()
@@ -57,6 +57,7 @@ namespace Simvars
         {
             ExecuteDelegate = _ExecuteDelegate;
         }
+
         public bool CanExecute(object _oParameter)
         {
             return true;

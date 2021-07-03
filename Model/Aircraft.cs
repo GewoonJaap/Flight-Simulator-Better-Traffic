@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Microsoft.FlightSimulator.SimConnect;
+using System;
 using System.Collections.Generic;
-using System.Windows.Documents;
-using Microsoft.FlightSimulator.SimConnect;
-using Simvars.Emum;
 
 namespace Simvars.Model
 {
