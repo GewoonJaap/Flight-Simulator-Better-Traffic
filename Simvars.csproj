@@ -93,8 +93,6 @@
     <Compile Include="SimvarsViewModel.cs" />
     <Compile Include="Struct\PlayerAircraftStruct.cs" />
     <Compile Include="Struct\PositionData.cs" />
-    <Compile Include="textsimvars.cs" />
-    <Compile Include="units.cs" />
     <Compile Include="Util\AddonScanner.cs" />
     <Compile Include="Util\ApiRequest.cs" />
     <Compile Include="Util\FlightRadarApi.cs" />

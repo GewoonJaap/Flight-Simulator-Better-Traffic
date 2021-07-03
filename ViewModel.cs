@@ -11,29 +11,28 @@ namespace Simvars
 
         public void OnPropertyChanged([CallerMemberName] string _sPropertyName = null)
         {
-            PropertyChangedEventHandler hEventHandler = this.PropertyChanged;
+            var hEventHandler = PropertyChanged;
             if (hEventHandler != null && !string.IsNullOrEmpty(_sPropertyName))
-            {
                 hEventHandler(this, new PropertyChangedEventArgs(_sPropertyName));
-            }
         }
 
         protected bool SetProperty<T>(ref T _tField, T _tValue, [CallerMemberName] string _sPropertyName = null)
         {
-            return this.SetProperty(ref _tField, _tValue, out T tPreviousValue, _sPropertyName);
+            return SetProperty(ref _tField, _tValue, out var tPreviousValue, _sPropertyName);
         }
 
-        protected bool SetProperty<T>(ref T _tField, T _tValue, out T _tPreviousValue, [CallerMemberName] string _sPropertyName = null)
+        protected bool SetProperty<T>(ref T _tField, T _tValue, out T _tPreviousValue,
+            [CallerMemberName] string _sPropertyName = null)
         {
-            if (!object.Equals(_tField, _tValue))
+            if (!Equals(_tField, _tValue))
             {
                 _tPreviousValue = _tField;
                 _tField = _tValue;
-                this.OnPropertyChanged(_sPropertyName);
+                OnPropertyChanged(_sPropertyName);
                 return true;
             }
 
-            _tPreviousValue = default(T);
+            _tPreviousValue = default;
             return false;
         }
     }
@@ -44,10 +43,6 @@ namespace Simvars
 
     public class BaseCommand : ICommand
     {
-        public Action<object> ExecuteDelegate { get; set; }
-
-        public event EventHandler CanExecuteChanged = null;
-
         public BaseCommand()
         {
             ExecuteDelegate = null;
@@ -57,6 +52,10 @@ namespace Simvars
         {
             ExecuteDelegate = _ExecuteDelegate;
         }
+
+        public Action<object> ExecuteDelegate { get; set; }
+
+        public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object _oParameter)
         {
