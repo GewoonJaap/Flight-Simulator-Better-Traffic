@@ -50,22 +50,22 @@ namespace Simvars.Util
 
                 Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.FlightRadarId == property.Name);
 
-                double Longitude = (double)property.Value[2];
-                double Latitude = (double)property.Value[1];
-                int Heading = (int)property.Value[3];
-                double Altimeter = (int)property.Value[4] * 0.3048;
-                int Speed = (int)property.Value[5];
-                string Callsign = (string)property.Value[16];
+                double longitude = (double)property.Value[2];
+                double latitude = (double)property.Value[1];
+                int heading = (int)property.Value[3];
+                double altimeter = (int)property.Value[4] * 0.3048;
+                int speed = (int)property.Value[5];
+                string callsign = (string)property.Value[16];
                 bool isGrounded = (bool)property.Value[14];
-                string AirportOrigin = null;
-                string AirportDestination = null;
-                string TailNumber = Callsign;
-                string Model = "Airbus A320 Neo";
-                string Airline = "Asobo";
+                string airportOrigin = null;
+                string airportDestination = null;
+                string tailNumber = callsign;
+                string model = "Airbus A320 Neo";
+                string airline = "Asobo";
 
                 if (aircraft == null)
                 {
-                    if(LiveTrafficAircraft.Count >= MaxPlanes) continue;
+                    if (LiveTrafficAircraft.Count >= MaxPlanes) continue;
                     JObject extraData = FlightRadarApi.GetAircraftData(property.Name);
                     if ((bool)extraData["success"])
                     {
@@ -73,12 +73,12 @@ namespace Simvars.Util
                     }
                     try
                     {
-                        TailNumber = (string)extraData["identification"]?["number"]?["default"] ?? Callsign;
-                        Model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo";
-                        Airline = (string)extraData["airline"]?["name"] ?? "Asobo";
-                        AirportOrigin = (string)extraData["airport"]?["origin"]?["code"]?["icao"] ?? null;
+                        tailNumber = (string)extraData["identification"]?["number"]?["default"] ?? callsign;
+                        model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo";
+                        airline = (string)extraData["airline"]?["name"] ?? "Asobo";
+                        airportOrigin = (string)extraData["airport"]?["origin"]?["code"]?["icao"] ?? null;
 
-                        AirportDestination = (string)extraData["airport"]?["destination"]?["code"]?["icao"] ?? null;
+                        airportDestination = (string)extraData["airport"]?["destination"]?["code"]?["icao"] ?? null;
                     }
                     catch (Exception e)
                     {
@@ -87,19 +87,19 @@ namespace Simvars.Util
 
                     aircraft = new Aircraft()
                     {
-                        Longitude = Longitude,
-                        Latitude = Latitude,
-                        Heading = Heading,
-                        Altimeter = Altimeter,
-                        Speed = Speed,
-                        Callsign = Callsign,
+                        Longitude = longitude,
+                        Latitude = latitude,
+                        Heading = heading,
+                        Altimeter = altimeter,
+                        Speed = speed,
+                        Callsign = callsign,
                         FlightRadarId = property.Name,
                         IsGrounded = isGrounded,
-                        TailNumber = TailNumber,
-                        Model = Model,
-                        Airline = Airline,
-                        AirportOrigin = AirportOrigin,
-                        AirportDestination = AirportDestination,
+                        TailNumber = tailNumber,
+                        Model = model,
+                        Airline = airline,
+                        AirportOrigin = airportOrigin,
+                        AirportDestination = airportDestination,
                     };
 
                     /*try
@@ -137,11 +137,11 @@ namespace Simvars.Util
                     continue;
                 }
 
-                aircraft.Latitude = Latitude;
-                aircraft.Longitude = Longitude;
-                aircraft.Altimeter = Altimeter;
-                aircraft.Heading = Heading;
-                aircraft.Speed = Speed;
+                aircraft.Latitude = latitude;
+                aircraft.Longitude = longitude;
+                aircraft.Altimeter = altimeter;
+                aircraft.Heading = heading;
+                aircraft.Speed = speed;
                 aircraft.IsGrounded = isGrounded;
                 if (!aircraft.IsGrounded)
                 {
@@ -149,11 +149,11 @@ namespace Simvars.Util
 
                     aircraft.Waypoints.Add(new Waypoint()
                     {
-                        Altitude = Altimeter,
+                        Altitude = altimeter,
                         IsGrounded = isGrounded,
-                        Latitude = Latitude,
-                        Longitude = Longitude,
-                        Speed = Speed
+                        Latitude = latitude,
+                        Longitude = longitude,
+                        Speed = speed
                     });
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints,
                     aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
@@ -214,7 +214,7 @@ namespace Simvars.Util
                 Pitch = 0,
                 Bank = 0,
                 Heading = aircraft.Heading,
-                OnGround = (uint) (aircraft.IsGrounded ? 0 : 1),
+                OnGround = (uint)(aircraft.IsGrounded ? 0 : 1),
                 Airspeed = (uint)aircraft.Speed,
             };
             _simConnect.AICreateNonATCAircraft(aircraft.MatchedModel, aircraft.TailNumber, position, requestId);

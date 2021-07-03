@@ -330,6 +330,8 @@ namespace Simvars
 
             m_oTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
             m_oTimer.Tick += new EventHandler(OnTick);
+
+            AddonScanner.ScanAddons();
         }
 
         private void ChangeWayPoint()
