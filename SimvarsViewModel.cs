@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.FlightSimulator.SimConnect;
+using Sentry;
 using Simvars.Emum;
 using Simvars.Model;
 using Simvars.Struct;
@@ -85,23 +86,34 @@ namespace Simvars
 
         public SimvarsViewModel()
         {
-            lObjectIDs = new ObservableCollection<uint> { 1 };
-
-            lSimvarRequests = new ObservableCollection<SimvarRequest>();
-            lErrorMessages = new ObservableCollection<string>();
-
-            cmdToggleConnect = new BaseCommand(p => { ToggleConnect(); });
-            cmdAddRequest = new BaseCommand(p =>
+            using (SentrySdk.Init(o =>
             {
-                AddRequest(_mIIndexRequest == 0 ? _mSSimvarRequest : _mSSimvarRequest + ":" + _mIIndexRequest,
-                    sUnitRequest, bIsString);
-            });
-            cmdLoadFiles = new BaseCommand(p => { ChangeWayPoint(); });
+                o.Dsn = "https://0992ad58083f40cda51d04f3ccfc190f@o252778.ingest.sentry.io/5846102";
+                // When configuring for the first time, to see what the SDK is doing:
+                o.Debug = true;
+                // Set traces_sample_rate to 1.0 to capture 100% of transactions for performance
+                // monitoring. We recommend adjusting this value in production.
+                o.TracesSampleRate = 1.0;
+            }))
+            {
+                lObjectIDs = new ObservableCollection<uint> { 1 };
 
-            _mOTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
-            _mOTimer.Tick += OnTick;
+                lSimvarRequests = new ObservableCollection<SimvarRequest>();
+                lErrorMessages = new ObservableCollection<string>();
 
-            AddonScanner.ScanAddons();
+                cmdToggleConnect = new BaseCommand(p => { ToggleConnect(); });
+                cmdAddRequest = new BaseCommand(p =>
+                {
+                    AddRequest(_mIIndexRequest == 0 ? _mSSimvarRequest : _mSSimvarRequest + ":" + _mIIndexRequest,
+                        sUnitRequest, bIsString);
+                });
+                cmdLoadFiles = new BaseCommand(p => { ChangeWayPoint(); });
+
+                _mOTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
+                _mOTimer.Tick += OnTick;
+
+                AddonScanner.ScanAddons();
+            }
         }
 
         private void ChangeWayPoint()

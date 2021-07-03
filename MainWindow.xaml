@@ -24,8 +24,8 @@
                 HorizontalAlignment="Left" Margin="29,156,0,0" VerticalAlignment="Top" Width="100" Height="23"
                 RenderTransformOrigin="0.423,0.841" Grid.ColumnSpan="2" />
 
-        <ListView x:Name="lv_Simvars" ItemsSource="{Binding lSimvarRequests}"
-                  SelectedItem="{Binding oSelectedSimvarRequest, Mode=OneWayToSource}" Margin="219,10,10,10"
+        <ListView x:Name="lv_Simvars"
+                 Margin="219,10,10,10"
                   Grid.Column="1" SelectionChanged="lv_Simvars_SelectionChanged">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -38,7 +38,7 @@
             </ListView.ItemContainerStyle>
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Remove" Command="{Binding cmdRemoveSelectedRequest}" />
+                    <MenuItem Header="Remove" />
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.View>

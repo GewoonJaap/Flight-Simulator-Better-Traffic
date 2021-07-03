@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Sentry;
 
 namespace Simvars.Util
 {
@@ -9,8 +10,18 @@ namespace Simvars.Util
     {
         public static List<string> ScanAddons()
         {
-            string communityFolder = GetCommunityFolder();
-            return GetInstalledLiveries(communityFolder);
+            List<string> result = new List<string>();
+            try
+            {
+                string communityFolder = GetCommunityFolder();
+                result = GetInstalledLiveries(communityFolder);
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
+
+            return result;
         }
 
         private static List<string> GetInstalledLiveries(string communityFolder)
