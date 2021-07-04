@@ -32,10 +32,17 @@ namespace Simvars.Util
             {
                 string finalDirectory = addonDirectory;
                 if (!File.Exists(addonDirectory + "\\manifest.json")) continue;
+                try
+                {
+                    JObject manifest = JObject.Parse(File.ReadAllText(addonDirectory + "\\manifest.json"));
+                    Console.WriteLine(addonDirectory + "\\manifest.json");
+                    if (((string)manifest["content_type"])?.ToLower() != "aircraft") continue;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Failed to read json, ignoring this.");
+                }
 
-                JObject manifest = JObject.Parse(File.ReadAllText(addonDirectory + "\\manifest.json"));
-                Console.WriteLine(addonDirectory + "\\manifest.json");
-                if (((string)manifest["content_type"])?.ToLower() != "aircraft") continue;
                 finalDirectory += "\\SimObjects\\Airplanes";
 
                 if (!Directory.Exists(finalDirectory)) continue;
