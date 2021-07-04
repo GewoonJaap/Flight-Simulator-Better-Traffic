@@ -14,9 +14,17 @@ namespace Simvars.Util
             Console.WriteLine("Model matching:" + model + " with airline: " + airline);
             JObject models = JObject.Parse(File.ReadAllText(@".\Config\ModelMatching.json"));
             if (models.GetValue(model) == null) Console.WriteLine("Failed to model match: " + model);
+            string matchedModel = (string)models.GetValue(model) ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
 
-            string matchedModel = (string)models.GetValue(model) ?? "Airbus A320 Neo";
-            if (installedLiveries.Contains(matchedModel + " " + airline))
+            if (models.GetValue(matchedModel + " " + airline) != null)
+            {
+                matchedModel = (string) models.GetValue(matchedModel + " " + airline);
+            }
+            else if (installedLiveries.Contains(matchedModel + " " + airline + " AI"))
+            {
+                matchedModel = matchedModel + " " + airline + " AI";
+            }
+            else if (installedLiveries.Contains(matchedModel + " " + airline))
             {
                 matchedModel = matchedModel + " " + airline;
             }
@@ -25,6 +33,7 @@ namespace Simvars.Util
                 if (models.GetValue(matchedModel + " Default") == null) Console.WriteLine("Failed to model match: " + matchedModel + " Default");
                 matchedModel = (string)models.GetValue(matchedModel + " Default") ?? "Airbus A320 Neo Asobo";
             }
+            Console.WriteLine("Model matched " + model + " " + airline + " with " + matchedModel);
             return matchedModel;
         }
     }
