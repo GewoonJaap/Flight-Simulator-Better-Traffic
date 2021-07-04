@@ -9,7 +9,7 @@ namespace Simvars.Model
         #region SimData
 
         public int RequestId;
-        public uint ObjectId;
+        public uint ObjectId = 0;
         public string MatchedModel;
 
         #endregion SimData

@@ -126,6 +126,8 @@ namespace Simvars.Util
                     continue;
                 }
 
+                if (aircraft.ObjectId == 0) continue;
+
                 if (!aircraft.IsGrounded)
                 {
                     Console.WriteLine("Updating a flying plane " + aircraft.TailNumber + " lat: " + latitude + " long: " + longitude + " request ID: " + aircraft.RequestId + " speed: " + speed + " heading: " + heading + " objectId " + aircraft.ObjectId);
