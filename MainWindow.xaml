@@ -23,12 +23,11 @@
         <Button x:Name="btn_LoadFile" Content="Manual Waypoint" Command="{Binding cmdLoadFiles}"
                 HorizontalAlignment="Left" Margin="29,156,0,0" VerticalAlignment="Top" Width="100" Height="23"
                 RenderTransformOrigin="0.423,0.841" Grid.ColumnSpan="2" />
-
         <ListView x:Name="lv_Simvars"
                  Margin="219,10,10,10"
-                  Grid.Column="1" SelectionChanged="lv_Simvars_SelectionChanged">
+                  Grid.Column="1" SelectionChanged="lv_Simvars_SelectionChanged" IsEnabled="False">
             <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
+                <Style TargetType="{x:Type ListViewItem}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding bStillPending}" Value="True">
                             <Setter Property="Background" Value="#55D3D373" />
@@ -49,6 +48,8 @@
                 </GridView>
             </ListView.View>
         </ListView>
+        <Label Content="Coming soon" HorizontalAlignment="Left" VerticalAlignment="Top" Height="55"
+                Width="230" Grid.Column="1" Margin="354,245,0,0" FontSize="36" FontWeight="Bold" />
 
         <Ellipse HorizontalAlignment="Left" Height="14" Margin="200,10,0,0" Stroke="Black" VerticalAlignment="Top"
                  Width="14" Grid.Column="1">
