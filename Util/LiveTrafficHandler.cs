@@ -15,6 +15,7 @@ namespace Simvars.Util
         private readonly SimConnect _simConnect;
         private int _requestCount = 0;
         private int MaxPlanes = 40;
+        private List<string> _liveries;
 
         public LiveTrafficHandler(SimConnect simConnect)
         {
@@ -23,6 +24,7 @@ namespace Simvars.Util
 
             Settings settings = SettingsReader.FetchSettings();
             if (settings.MaximumAmountOfPlanes >= 0) MaxPlanes = settings.MaximumAmountOfPlanes;
+            _liveries = AddonScanner.ScanAddons();
         }
 
         public void FetchNewData(PlayerAircraft plane)
@@ -39,6 +41,19 @@ namespace Simvars.Util
             {
                 Console.WriteLine("Setting object ID for: " + aircraft.Callsign);
                 aircraft.ObjectId = objectId;
+
+                PositionData position = new PositionData
+                {
+                    Latitude = aircraft.Latitude,
+                    Longitude = aircraft.Longitude,
+                    Altitude = aircraft.Altimeter,
+                    Heading = aircraft.Heading,
+                    Pitch = 0,
+                    Bank = 0,
+                    Airspeed = (uint)aircraft.Speed,
+                    OnGround = (uint)(aircraft.IsGrounded ? 1 : 0)
+                };
+                _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
             }
         }
 
@@ -104,22 +119,16 @@ namespace Simvars.Util
                         AirportOrigin = airportOrigin,
                         AirportDestination = airportDestination,
                     };
-                    aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.Model, aircraft.Airline);
+                    aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.Model, aircraft.Airline, _liveries);
 
                     LiveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
                     continue;
                 }
 
-                aircraft.Latitude = latitude;
-                aircraft.Longitude = longitude;
-                aircraft.Altimeter = altimeter;
-                aircraft.Heading = heading;
-                aircraft.Speed = speed;
-                aircraft.IsGrounded = isGrounded;
                 if (!aircraft.IsGrounded)
                 {
-                    Console.WriteLine("Updating a flying plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading + " objectId " + aircraft.ObjectId);
+                    Console.WriteLine("Updating a flying plane " + aircraft.TailNumber + " lat: " + latitude + " long: " + longitude + " request ID: " + aircraft.RequestId + " speed: " + speed + " heading: " + heading + " objectId " + aircraft.ObjectId);
 
                     aircraft.Waypoints.Add(new Waypoint()
                     {
@@ -129,8 +138,6 @@ namespace Simvars.Util
                         Longitude = longitude,
                         Speed = speed
                     });
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints,
-                    aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
                 }
                 else
                 {
@@ -143,14 +150,21 @@ namespace Simvars.Util
                         Pitch = 0,
                         Bank = 0,
                         Airspeed = (uint)aircraft.Speed,
-                        OnGround = 0
+                        OnGround = 1
                     };
                     Console.WriteLine("Updating a grounded plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading + " objectId " + aircraft.ObjectId);
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints,
-                        aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
 
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
+                aircraft.Latitude = latitude;
+                aircraft.Longitude = longitude;
+                aircraft.Altimeter = altimeter;
+                aircraft.Heading = heading;
+                aircraft.Speed = speed;
+                aircraft.IsGrounded = isGrounded;
+
+                _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints,
+                    aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
             }
 
             DespawnOldPlanes(flightRadarIds);

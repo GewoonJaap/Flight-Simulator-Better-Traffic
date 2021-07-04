@@ -7,9 +7,9 @@ namespace Simvars.Util
 {
     public static class ModelMatching
     {
-        public static string MatchModel(string model, string airline)
+        public static string MatchModel(string model, string airline, List<string> liveries = null)
         {
-            List<string> installedLiveries = AddonScanner.ScanAddons();
+            List<string> installedLiveries = liveries ?? AddonScanner.ScanAddons();
 
             Console.WriteLine("Model matching:" + model + " with airline: " + airline);
             JObject models = JObject.Parse(File.ReadAllText(@".\Config\ModelMatching.json"));
