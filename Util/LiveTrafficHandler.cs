@@ -14,12 +14,15 @@ namespace Simvars.Util
         public List<Aircraft> LiveTrafficAircraft;
         private readonly SimConnect _simConnect;
         private int _requestCount = 0;
-        private const int MaxPlanes = 40;
+        private int MaxPlanes = 40;
 
         public LiveTrafficHandler(SimConnect simConnect)
         {
             LiveTrafficAircraft = new List<Aircraft>();
             _simConnect = simConnect;
+
+            Settings settings = SettingsReader.FetchSettings();
+            if (settings.MaximumAmountOfPlanes >= 0) MaxPlanes = settings.MaximumAmountOfPlanes;
         }
 
         public void FetchNewData(PlayerAircraft plane)

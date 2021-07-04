@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using Sentry;
+using Simvars.Model;
 
 namespace Simvars.Util
 {
@@ -14,7 +16,7 @@ namespace Simvars.Util
             try
             {
                 string communityFolder = GetCommunityFolder();
-                result = GetInstalledLiveries(communityFolder);
+                if (communityFolder != null) result = GetInstalledLiveries(communityFolder);
             }
             catch (Exception ex)
             {
@@ -95,7 +97,20 @@ namespace Simvars.Util
             string msfsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\UserCfg.opt";
             string msfsDirectorySteam = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft Flight Simulator\\UserCfg.opt";
 
+            Settings settings = SettingsReader.FetchSettings();
+
+            if (settings.CommunityFolderPath != "PATH_HERE" && Directory.Exists(settings.CommunityFolderPath))
+            {
+                return settings.CommunityFolderPath;
+            }
+
             string packagePath = File.Exists(msfsDirectorySteam) ? msfsDirectorySteam : msfsDirectory;
+
+            if (!File.Exists(packagePath))
+            {
+                MessageBox.Show("Failed to find your Community folder!\nPlease set the location to the Community folder in the 'Config/Settings.json' file and restart the application!\nIgnoring this error will make the livery matching unavailable", "Failed to find Community Folder");
+                return null;
+            }
 
             string[] lines = System.IO.File.ReadAllLines(packagePath);
             foreach (string line in lines)
@@ -113,6 +128,9 @@ namespace Simvars.Util
                 }
             }
             Console.WriteLine(addonPath);
+            settings.CommunityFolderPath = addonPath;
+            settings.Save();
+
             return addonPath;
         }
     }
