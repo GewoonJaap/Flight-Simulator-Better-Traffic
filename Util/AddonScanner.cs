@@ -85,12 +85,12 @@ namespace Simvars.Util
         private static string GetCommunityFolder()
         {
             string addonPath = "";
-            string msfsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\";
-            string msfsDirectorySteam = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft Flight Simulator\\";
+            string msfsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\UserCfg.opt";
+            string msfsDirectorySteam = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft Flight Simulator\\UserCfg.opt";
 
-            string packagePath = Directory.Exists(msfsDirectorySteam) ? msfsDirectorySteam : msfsDirectory;
+            string packagePath = File.Exists(msfsDirectorySteam) ? msfsDirectorySteam : msfsDirectory;
 
-            string[] lines = System.IO.File.ReadAllLines(packagePath + "UserCfg.opt");
+            string[] lines = System.IO.File.ReadAllLines(packagePath);
             foreach (string line in lines)
             {
                 // Use a tab to indent each line of the file.
