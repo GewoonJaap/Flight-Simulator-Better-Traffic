@@ -41,6 +41,9 @@ namespace Simvars.Util
                 if (!Directory.Exists(finalDirectory)) continue;
 
                 string[] airplaneDirectories = Directory.GetDirectories(finalDirectory);
+
+                if (airplaneDirectories.Length == 0) continue;
+
                 finalDirectory = airplaneDirectories[0] + "\\aircraft.cfg";
 
                 if (!File.Exists(finalDirectory)) continue;
