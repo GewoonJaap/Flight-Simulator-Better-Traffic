@@ -16,7 +16,17 @@ namespace Simvars.Util
             try
             {
                 string communityFolder = GetCommunityFolder();
+                string officialFolder = communityFolder.Replace("Community", "Official");
                 if (communityFolder != null) result = GetInstalledAddons(communityFolder);
+                if (Directory.Exists(officialFolder))
+                {
+                    string[] officialDirectories = Directory.GetDirectories(officialFolder);
+                    if (officialDirectories.Length == 1)
+                    {
+                        officialFolder = officialDirectories[0] + "\\";
+                    }
+                    result.AddRange(GetInstalledAddons(officialFolder));
+                }
             }
             catch (Exception ex)
             {
@@ -82,7 +92,7 @@ namespace Simvars.Util
                 // Use a tab to indent each line of the file.
                 if (line.ToLower().Trim().StartsWith("[fltsim"))
                 {
-                    if (curentAddon != null && curentAddon.Title != String.Empty)
+                    if (curentAddon != null && curentAddon.Title != String.Empty && !curentAddon.Title.Contains("AirTraffic"))
                     {
                         addons.Add(curentAddon);
                         curentAddon = null;
@@ -124,7 +134,7 @@ namespace Simvars.Util
                 curentAddon.ModelCode = modelCode.Trim();
             }
 
-            if (curentAddon != null)
+            if (curentAddon != null && !curentAddon.Title.Contains("AirTraffic"))
             {
                 addons.Add(curentAddon);
             }

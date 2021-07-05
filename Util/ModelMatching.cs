@@ -16,7 +16,7 @@ namespace Simvars.Util
             Console.WriteLine($"Model matching: {model} with airline: {airline} and modelCode {modelCode}");
             JObject models = JObject.Parse(File.ReadAllText(@".\Config\ModelMatching.json"));
             if (models.GetValue(model) == null) Console.WriteLine($"Failed to model match: {model}");
-            string matchedModel = (string)models.GetValue(model) ?? (string)models.GetValue(modelCode) ?? installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
+            string matchedModel = (string)models.GetValue(model) ?? (string)models.GetValue(modelCode) ?? installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title?.Replace("Asobo", "")?.Trim() ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
 
             if (TryFindAircraft(models, installedAddons, $"{matchedModel} {airline}") != null)
             {
@@ -30,6 +30,11 @@ namespace Simvars.Util
             {
                 if (models.GetValue(matchedModel + " Default") == null) Console.WriteLine($"Failed to model match: {matchedModel} Default");
                 matchedModel = (string)models.GetValue($"{matchedModel} Default") ?? installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title ?? "Airbus A320 Neo Asobo";
+                if ((string) models.GetValue($"{matchedModel} Default") != null && installedAddons.FirstOrDefault(addon => addon.Title == (string)models.GetValue($"{matchedModel} Default")) == null)
+                {
+                    Console.WriteLine($"Failed to model match: {(string)models.GetValue($"{matchedModel} Default")} not installed!");
+                    matchedModel = installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title ?? "Airbus A320 Neo Asobo";
+                }
             }
             Console.WriteLine($"Model matched {model} {airline} with: {matchedModel}");
             return matchedModel;
