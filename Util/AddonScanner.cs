@@ -87,6 +87,7 @@ namespace Simvars.Util
 
             string title = "";
             string modelCode = "";
+            string icaoAirline = "";
             foreach (string line in lines)
             {
                 // Use a tab to indent each line of the file.
@@ -97,9 +98,10 @@ namespace Simvars.Util
                         addons.Add(curentAddon);
                         curentAddon = null;
                         title = "";
+                        icaoAirline = "";
                     }
                 }
-                if (!line.ToLower().StartsWith("title") && !line.ToLower().StartsWith("icao_type_designator")) continue;
+                if (!line.ToLower().StartsWith("title") && !line.ToLower().StartsWith("icao_type_designator") && !line.ToLower().StartsWith("icao_airline")) continue;
 
                 string value = line.Split('=')[1].Trim();
                 if (value.StartsWith("\""))
@@ -120,9 +122,13 @@ namespace Simvars.Util
                 {
                     title = value;
                 }
-                else
+                else if(line.ToLower().StartsWith("icao_type_designator"))
                 {
                     modelCode = value;
+                }
+                else
+                {
+                    icaoAirline = value;
                 }
 
                 if (curentAddon == null)
@@ -132,6 +138,7 @@ namespace Simvars.Util
 
                 curentAddon.Title = title.Trim();
                 curentAddon.ModelCode = modelCode.Trim();
+                curentAddon.Icao_Airline = icaoAirline.Trim();
             }
 
             if (curentAddon != null && !curentAddon.Title.Contains("AirTraffic"))

@@ -21,6 +21,7 @@ namespace Simvars.Model
         public string TailNumber;
         public string Model;
         public string Airline;
+        public string IcaoAirline;
         public string ModelCode;
 
         #endregion Aircraft

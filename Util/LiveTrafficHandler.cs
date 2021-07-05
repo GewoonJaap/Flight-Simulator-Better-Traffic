@@ -75,6 +75,7 @@ namespace Simvars.Util
                 int speed = (int)property.Value[5];
                 string callsign = (string)property.Value[16];
                 bool isGrounded = (bool)property.Value[14];
+                string icaoAirline = (string)property.Value[18];
                 string airportOrigin = null;
                 string airportDestination = null;
                 string tailNumber = callsign;
@@ -94,7 +95,7 @@ namespace Simvars.Util
                     {
                         tailNumber = (string)extraData["identification"]?["number"]?["default"] ?? callsign;
                         model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo";
-                        modelCode = (string)extraData["aircraft"]?["model"]?["code"] ?? "A320";
+                        modelCode = (string)extraData["aircraft"]?["model"]?["code"] ?? "A32N";
                         airline = (string)extraData["airline"]?["name"] ?? "Asobo";
                         airportOrigin = (string)extraData["airport"]?["origin"]?["code"]?["icao"] ?? null;
 
@@ -120,9 +121,10 @@ namespace Simvars.Util
                         Airline = airline,
                         AirportOrigin = airportOrigin,
                         AirportDestination = airportDestination,
-                        ModelCode = modelCode
+                        ModelCode = modelCode,
+                        IcaoAirline = icaoAirline
                     };
-                    aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.ModelCode, aircraft.Model, aircraft.Airline, _addons);
+                    aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.ModelCode, aircraft.Model, aircraft.Airline, aircraft.IcaoAirline, _addons);
 
                     LiveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
