@@ -13,10 +13,10 @@ namespace Simvars.Util
         {
             List<Addon> installedAddons = addons ?? AddonScanner.ScanAddons();
 
-            Console.WriteLine($"Model matching: {model} with airline: {airline}");
+            Console.WriteLine($"Model matching: {model} with airline: {airline} and modelCode {modelCode}");
             JObject models = JObject.Parse(File.ReadAllText(@".\Config\ModelMatching.json"));
             if (models.GetValue(model) == null) Console.WriteLine($"Failed to model match: {model}");
-            string matchedModel = (string)models.GetValue(model) ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
+            string matchedModel = (string)models.GetValue(model) ?? (string)models.GetValue(modelCode) ?? installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
 
             if (TryFindAircraft(models, installedAddons, $"{matchedModel} {airline}") != null)
             {
@@ -29,7 +29,7 @@ namespace Simvars.Util
             else
             {
                 if (models.GetValue(matchedModel + " Default") == null) Console.WriteLine($"Failed to model match: {matchedModel} Default");
-                matchedModel = (string)models.GetValue($"{matchedModel} Default") ?? "Airbus A320 Neo Asobo";
+                matchedModel = (string)models.GetValue($"{matchedModel} Default") ?? installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title ?? "Airbus A320 Neo Asobo";
             }
             Console.WriteLine($"Model matched {model} {airline} with: {matchedModel}");
             return matchedModel;
@@ -43,13 +43,13 @@ namespace Simvars.Util
             {
                 foundAircraft = (string)models.GetValue(fullName);
             }
-            else if (installedAddons.FirstOrDefault(addon => addon.Title == $"{fullName} AI") != null)
+            else if (installedAddons.FirstOrDefault(addon => addon.Title.StartsWith($"{fullName} AI")) != null)
             {
-                foundAircraft = $"{fullName} AI";
+                foundAircraft = installedAddons.First(addon => addon.Title.StartsWith($"{fullName} AI")).Title;
             }
-            else if (installedAddons.FirstOrDefault(addon => addon.Title == fullName) != null)
+            else if (installedAddons.FirstOrDefault(addon => addon.Title.StartsWith(fullName)) != null)
             {
-                foundAircraft = fullName;
+                foundAircraft = installedAddons.First(addon => addon.Title.StartsWith(fullName)).Title;
             }
 
             return foundAircraft;
