@@ -24,6 +24,7 @@ namespace Simvars.Util
                     CommunityFolderPath = "PATH_HERE",
                     MaximumAmountOfPlanes = 40
                 };
+                settings.Save();
             }
 
             return settings;

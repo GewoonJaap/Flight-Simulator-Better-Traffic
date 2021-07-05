@@ -158,6 +158,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Addon.cs" />
     <Compile Include="Model\Aircraft.cs" />
     <Compile Include="Model\PlayerAircraft.cs" />
     <Compile Include="Model\Settings.cs" />

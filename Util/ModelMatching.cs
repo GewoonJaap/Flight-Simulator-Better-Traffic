@@ -3,27 +3,28 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Simvars.Model;
 
 namespace Simvars.Util
 {
     public static class ModelMatching
     {
-        public static string MatchModel(string model, string airline, List<string> liveries = null)
+        public static string MatchModel(string modelCode, string model, string airline, List<Addon> addons = null)
         {
-            List<string> installedLiveries = liveries ?? AddonScanner.ScanAddons();
+            List<Addon> installedAddons = addons ?? AddonScanner.ScanAddons();
 
             Console.WriteLine($"Model matching: {model} with airline: {airline}");
             JObject models = JObject.Parse(File.ReadAllText(@".\Config\ModelMatching.json"));
             if (models.GetValue(model) == null) Console.WriteLine($"Failed to model match: {model}");
             string matchedModel = (string)models.GetValue(model) ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
 
-            if (TryFindAircraft(models, installedLiveries, $"{matchedModel} {airline}") != null)
+            if (TryFindAircraft(models, installedAddons, $"{matchedModel} {airline}") != null)
             {
-                matchedModel = TryFindAircraft(models, installedLiveries, $"{matchedModel} {airline}");
+                matchedModel = TryFindAircraft(models, installedAddons, $"{matchedModel} {airline}");
             }
-            else if (airline.Contains("(") && TryFindAircraft(models, installedLiveries, $"{matchedModel} {airline.Split('(')[0].Trim()}") != null)
+            else if (airline.Contains("(") && TryFindAircraft(models, installedAddons, $"{matchedModel} {airline.Split('(')[0].Trim()}") != null)
             {
-                matchedModel = TryFindAircraft(models, installedLiveries, $"{matchedModel} {airline.Split('(')[0].Trim()}");
+                matchedModel = TryFindAircraft(models, installedAddons, $"{matchedModel} {airline.Split('(')[0].Trim()}");
             }
             else
             {
@@ -34,7 +35,7 @@ namespace Simvars.Util
             return matchedModel;
         }
 
-        private static string TryFindAircraft(JObject models, List<string> installedLiveries, string fullName)
+        private static string TryFindAircraft(JObject models, List<Addon> installedAddons, string fullName)
         {
             string foundAircraft = null;
 
@@ -42,11 +43,11 @@ namespace Simvars.Util
             {
                 foundAircraft = (string)models.GetValue(fullName);
             }
-            else if (installedLiveries.Contains($"{fullName} AI"))
+            else if (installedAddons.FirstOrDefault(addon => addon.Title == $"{fullName} AI") != null)
             {
                 foundAircraft = $"{fullName} AI";
             }
-            else if (installedLiveries.Contains(fullName))
+            else if (installedAddons.FirstOrDefault(addon => addon.Title == fullName) != null)
             {
                 foundAircraft = fullName;
             }

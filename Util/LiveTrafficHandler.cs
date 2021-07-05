@@ -15,7 +15,7 @@ namespace Simvars.Util
         private readonly SimConnect _simConnect;
         private int _requestCount = 0;
         private int MaxPlanes = 40;
-        private List<string> _liveries;
+        private List<Addon> _addons;
 
         public LiveTrafficHandler(SimConnect simConnect)
         {
@@ -24,7 +24,7 @@ namespace Simvars.Util
 
             Settings settings = SettingsReader.FetchSettings();
             if (settings.MaximumAmountOfPlanes >= 0) MaxPlanes = settings.MaximumAmountOfPlanes;
-            _liveries = AddonScanner.ScanAddons();
+            _addons = AddonScanner.ScanAddons();
         }
 
         public void FetchNewData(PlayerAircraft plane)
@@ -79,6 +79,7 @@ namespace Simvars.Util
                 string airportDestination = null;
                 string tailNumber = callsign;
                 string model = "Airbus A320 Neo";
+                string modelCode = "A320";
                 string airline = "Asobo";
 
                 if (aircraft == null)
@@ -93,6 +94,7 @@ namespace Simvars.Util
                     {
                         tailNumber = (string)extraData["identification"]?["number"]?["default"] ?? callsign;
                         model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo";
+                        modelCode = (string)extraData["aircraft"]?["model"]?["code"] ?? "A320";
                         airline = (string)extraData["airline"]?["name"] ?? "Asobo";
                         airportOrigin = (string)extraData["airport"]?["origin"]?["code"]?["icao"] ?? null;
 
@@ -118,8 +120,9 @@ namespace Simvars.Util
                         Airline = airline,
                         AirportOrigin = airportOrigin,
                         AirportDestination = airportDestination,
+                        ModelCode = modelCode
                     };
-                    aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.Model, aircraft.Airline, _liveries);
+                    aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.ModelCode, aircraft.Model, aircraft.Airline, _addons);
 
                     LiveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);

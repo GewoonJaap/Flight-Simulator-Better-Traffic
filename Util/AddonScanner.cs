@@ -10,13 +10,13 @@ namespace Simvars.Util
 {
     public static class AddonScanner
     {
-        public static List<string> ScanAddons()
+        public static List<Addon> ScanAddons()
         {
-            List<string> result = new List<string>();
+            List<Addon> result = new List<Addon>();
             try
             {
                 string communityFolder = GetCommunityFolder();
-                if (communityFolder != null) result = GetInstalledLiveries(communityFolder);
+                if (communityFolder != null) result = GetInstalledAddons(communityFolder);
             }
             catch (Exception ex)
             {
@@ -26,14 +26,13 @@ namespace Simvars.Util
             return result;
         }
 
-        private static List<string> GetInstalledLiveries(string communityFolder)
+        private static List<Addon> GetInstalledAddons(string communityFolder)
         {
-            List<string> liveries = new List<string>();
+            List<Addon> addons = new List<Addon>();
             string[] addonDirectories = Directory.GetDirectories(communityFolder);
             foreach (string addonDirectory in addonDirectories)
             {
                 string finalDirectory = addonDirectory;
-                if (!File.Exists(addonDirectory + "\\manifest.json")) continue;
                 try
                 {
                     JObject manifest = JObject.Parse(File.ReadAllText(addonDirectory + "\\manifest.json"));
@@ -45,6 +44,11 @@ namespace Simvars.Util
                     Console.WriteLine("Failed to read json, ignoring this.");
                 }
 
+                if (File.Exists(finalDirectory + "\\aircraft.cfg"))
+                {
+                    addons.AddRange(ParseCfg(finalDirectory + "\\aircraft.cfg"));
+                }
+
                 finalDirectory += "\\SimObjects\\Airplanes";
 
                 if (!Directory.Exists(finalDirectory)) continue;
@@ -53,42 +57,79 @@ namespace Simvars.Util
 
                 if (airplaneDirectories.Length == 0) continue;
 
-                finalDirectory = airplaneDirectories[0] + "\\aircraft.cfg";
+                foreach (string directory in airplaneDirectories)
+                {
+                    finalDirectory = directory + "\\aircraft.cfg";
 
-                if (!File.Exists(finalDirectory)) continue;
+                    if (!File.Exists(finalDirectory)) continue;
 
-                liveries.AddRange(ParseCfg(finalDirectory));
+                    addons.AddRange(ParseCfg(finalDirectory));
+                }
             }
-            return liveries;
+            return addons;
         }
 
-        private static List<string> ParseCfg(string cfgPath)
+        private static List<Addon> ParseCfg(string cfgPath)
         {
-            List<string> liveryNames = new List<string>();
+            List<Addon> addons = new List<Addon>();
             string[] lines = System.IO.File.ReadAllLines(cfgPath);
+            Addon curentAddon = null;
+
+            string title = "";
+            string modelCode = "";
             foreach (string line in lines)
             {
                 // Use a tab to indent each line of the file.
-                if (!line.StartsWith("title")) continue;
+                if (line.ToLower().Trim().StartsWith("[fltsim"))
+                {
+                    if (curentAddon != null && curentAddon.Title != String.Empty)
+                    {
+                        addons.Add(curentAddon);
+                        curentAddon = null;
+                        title = "";
+                    }
+                }
+                if (!line.ToLower().StartsWith("title") && !line.ToLower().StartsWith("icao_type_designator")) continue;
 
-                string liveryName = line.Split('=')[1].Trim();
-                if (liveryName.StartsWith("\""))
+                string value = line.Split('=')[1].Trim();
+                if (value.StartsWith("\""))
                 {
-                    liveryName = liveryName.Split('"')[1].Trim();
-                    liveryName = liveryName.Split('"')[0].Trim();
+                    value = value.Split('"')[1].Trim();
+                    value = value.Split('"')[0].Trim();
                 }
-                else if (liveryName.EndsWith(" "))
+                else if (value.EndsWith(" "))
                 {
-                    liveryName = liveryName.Split(' ')[0].Trim();
+                    value = value.Split(' ')[0].Trim();
                 }
-                else if (liveryName.EndsWith(";"))
+                else if (value.EndsWith(";") || value.Contains(";"))
                 {
-                    liveryName = liveryName.Split(';')[0].Trim();
+                    value = value.Split(';')[0].Trim();
                 }
-                liveryNames.Add(liveryName.Trim());
+
+                if (line.ToLower().StartsWith("title"))
+                {
+                    title = value;
+                }
+                else
+                {
+                    modelCode = value;
+                }
+
+                if (curentAddon == null)
+                {
+                    curentAddon = new Addon();
+                }
+
+                curentAddon.Title = title.Trim();
+                curentAddon.ModelCode = modelCode.Trim();
             }
 
-            return liveryNames;
+            if (curentAddon != null)
+            {
+                addons.Add(curentAddon);
+            }
+
+            return addons;
         }
 
         private static string GetCommunityFolder()

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
+using Sentry;
 
 namespace Simvars.Model
 {
@@ -9,10 +11,17 @@ namespace Simvars.Model
 
         public void Save()
         {
-            string json = JsonConvert.SerializeObject(this);
+            try
+            {
+                string json = JsonConvert.SerializeObject(this);
 
-            //write string to file
-            System.IO.File.WriteAllText(@".\Config\Settings.json", json);
+                //write string to file
+                System.IO.File.WriteAllText(@".\Config\Settings.json", json);
+            }
+            catch (Exception ex)
+            {
+                _ = SentrySdk.CaptureException(ex);
+            }
         }
     }
 }
