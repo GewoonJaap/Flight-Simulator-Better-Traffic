@@ -6,6 +6,7 @@ using Simvars.Struct;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 
 namespace Simvars.Util
 {
@@ -39,7 +40,7 @@ namespace Simvars.Util
             Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.RequestId == requestId);
             if (aircraft != null)
             {
-                Console.WriteLine("Setting object ID for: " + aircraft.Callsign);
+                Log.Information("Setting object ID for: " + aircraft.Callsign);
                 aircraft.ObjectId = objectId;
 
                 PositionData position = new PositionData
@@ -103,7 +104,7 @@ namespace Simvars.Util
                     }
                     catch (Exception e)
                     {
-                        // Console.WriteLine(e);
+                        Log.Error($"Failed to gather extra data for {callsign}");
                     }
 
                     aircraft = new Aircraft()
@@ -135,7 +136,7 @@ namespace Simvars.Util
 
                 if (!aircraft.IsGrounded)
                 {
-                    Console.WriteLine("Updating a flying plane " + aircraft.TailNumber + " lat: " + latitude + " long: " + longitude + " request ID: " + aircraft.RequestId + " speed: " + speed + " heading: " + heading + " objectId " + aircraft.ObjectId);
+                    Log.Information("Updating a flying plane " + aircraft.TailNumber + " lat: " + latitude + " long: " + longitude + " request ID: " + aircraft.RequestId + " speed: " + speed + " heading: " + heading + " objectId " + aircraft.ObjectId);
 
                     aircraft.Waypoints.Add(new Waypoint()
                     {
@@ -159,7 +160,7 @@ namespace Simvars.Util
                         Airspeed = (uint)aircraft.Speed,
                         OnGround = 1
                     };
-                    Console.WriteLine("Updating a grounded plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading + " objectId " + aircraft.ObjectId);
+                    Log.Information("Updating a grounded plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading + " objectId " + aircraft.ObjectId);
 
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
@@ -185,7 +186,7 @@ namespace Simvars.Util
                 if (flightradarIds.Contains(plane.FlightRadarId)) return;
 
                 var requestId = DataRequests.AI_SPAWN + _requestCount;
-                Console.WriteLine(@"Deleting a plane " + plane.TailNumber + " request ID: " + _requestCount);
+                Log.Information(@"Deleting a plane " + plane.TailNumber + " request ID: " + _requestCount);
                 _requestCount = (_requestCount + 1) % 10000;
                 _simConnect.AIRemoveObject(plane.ObjectId, requestId);
                 removedPlanes.Add(plane);
@@ -200,7 +201,7 @@ namespace Simvars.Util
         {
             var requestId = DataRequests.AI_SPAWN + _requestCount;
             aircraft.RequestId = (10000 + _requestCount);
-            Console.WriteLine(@"Spawning a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId);
+            Log.Information(@"Spawning a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId);
             _requestCount = (_requestCount + 1) % 10000;
             var position = new SIMCONNECT_DATA_INITPOSITION
             {

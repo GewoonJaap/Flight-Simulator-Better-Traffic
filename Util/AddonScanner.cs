@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using Sentry;
+using Serilog;
 using Simvars.Model;
 
 namespace Simvars.Util
@@ -12,6 +13,7 @@ namespace Simvars.Util
     {
         public static List<Addon> ScanAddons()
         {
+            Log.Information("Searching for installed add-ons");
             List<Addon> result = new List<Addon>();
             try
             {
@@ -31,8 +33,14 @@ namespace Simvars.Util
             catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
+                Log.Error(ex.Message);
             }
 
+            result.ForEach(addon =>
+            {
+                Log.Information($"Found add-on with title: {addon.Title}, ICAO Airline: {addon.Icao_Airline}, model code: {addon.ModelCode}");
+            });
+            Log.Information($"Found {result.Count} installed add-ons in Official and Community folder");
             return result;
         }
 
@@ -43,15 +51,15 @@ namespace Simvars.Util
             foreach (string addonDirectory in addonDirectories)
             {
                 string finalDirectory = addonDirectory;
+                Log.Information($"Found add-on directory: {addonDirectory}");
                 try
                 {
                     JObject manifest = JObject.Parse(File.ReadAllText(addonDirectory + "\\manifest.json"));
-                    Console.WriteLine(addonDirectory + "\\manifest.json");
                     if (((string)manifest["content_type"])?.ToLower() != "aircraft") continue;
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Failed to read json, ignoring this.");
+                    Log.Information("Failed to read json, ignoring this.");
                 }
 
                 if (File.Exists(finalDirectory + "\\aircraft.cfg"))
@@ -122,7 +130,7 @@ namespace Simvars.Util
                 {
                     title = value;
                 }
-                else if(line.ToLower().StartsWith("icao_type_designator"))
+                else if (line.ToLower().StartsWith("icao_type_designator"))
                 {
                     modelCode = value;
                 }
@@ -185,7 +193,7 @@ namespace Simvars.Util
                     Directory.CreateDirectory(addonPath);
                 }
             }
-            Console.WriteLine(addonPath);
+            Log.Information(addonPath);
             settings.CommunityFolderPath = addonPath;
             settings.Save();
 

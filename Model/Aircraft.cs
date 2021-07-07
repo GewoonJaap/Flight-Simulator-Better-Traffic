@@ -1,6 +1,7 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
+using Serilog;
 
 namespace Simvars.Model
 {
@@ -44,7 +45,7 @@ namespace Simvars.Model
         public SIMCONNECT_DATA_WAYPOINT[] GetSimConnectDataWaypoints()
         {
             SIMCONNECT_DATA_WAYPOINT[] result = new SIMCONNECT_DATA_WAYPOINT[Waypoints.Count];
-            if (Waypoints.Count == 0) Console.WriteLine("Trying to generate a waypoint but I have no waypoint data! " + Callsign);
+            if (Waypoints.Count == 0) Log.Information("Trying to generate a waypoint but I have no waypoint data! " + Callsign);
             for (int i = 0; i < Waypoints.Count; i++)
             {
                 if (Waypoints[i].IsGrounded)
@@ -59,7 +60,7 @@ namespace Simvars.Model
                 result[i].Latitude = Waypoints[i].Latitude;
                 result[i].Longitude = Waypoints[i].Longitude;
                 result[i].ktsSpeed = Waypoints[i].Speed;
-                Console.WriteLine("Setting waypoint " + i + " for " + TailNumber + " lat " + result[i].Latitude + " long " + result[i].Longitude + " speed " + result[i].ktsSpeed + "  altitude " + result[i].Altitude + " objectId " + ObjectId);
+                Log.Information("Setting waypoint " + i + " for " + TailNumber + " lat " + result[i].Latitude + " long " + result[i].Longitude + " speed " + result[i].ktsSpeed + "  altitude " + result[i].Altitude + " objectId " + ObjectId);
             }
 
             Waypoints.RemoveAt(0);

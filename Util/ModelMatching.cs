@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Serilog;
 using Simvars.Model;
 
 namespace Simvars.Util
@@ -13,14 +14,14 @@ namespace Simvars.Util
         {
             List<Addon> installedAddons = addons ?? AddonScanner.ScanAddons();
 
-            Console.WriteLine($"Model matching: {model} with airline: {airline} and modelCode {modelCode}");
+            Log.Information($"Model matching: {model} with airline: {airline} and modelCode {modelCode}");
             JObject models = JObject.Parse(File.ReadAllText(@".\Config\ModelMatching.json"));
-            if (models.GetValue(model) == null) Console.WriteLine($"Failed to model match: {model}");
+            if (models.GetValue(model) == null) Log.Information($"Failed to model match: {model}");
             string matchedModel = (string)models.GetValue(model) ?? (string)models.GetValue(modelCode) ?? installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title?.Replace("Asobo", "")?.Trim() ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
 
             if (installedAddons.FirstOrDefault(addon => addon.Title == matchedModel) == null && installedAddons.FirstOrDefault(addon => addon.Title == matchedModel + " Asobo") == null)
             {
-                Console.WriteLine($"Failed to model match: {matchedModel} not installed!");
+                Log.Information($"Failed to model match: {matchedModel} not installed!");
                 matchedModel = installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title ?? "Airbus A320 Neo Asobo";
             }
 
@@ -28,16 +29,16 @@ namespace Simvars.Util
             {
                 matchedModel = TryFindAircraft(models, installedAddons, matchedModel, airline, icaoAirline);
             }
-            else if (airline.Contains("(") && TryFindAircraft(models, installedAddons, matchedModel, airline.Split('(')[0].Trim(), icaoAirline ) != null)
+            else if (airline.Contains("(") && TryFindAircraft(models, installedAddons, matchedModel, airline.Split('(')[0].Trim(), icaoAirline) != null)
             {
                 matchedModel = TryFindAircraft(models, installedAddons, matchedModel, airline.Split('(')[0].Trim(), icaoAirline);
             }
             else
             {
-                if (models.GetValue(matchedModel + " Default") == null) Console.WriteLine($"Failed to model match: {matchedModel} Default");
+                if (models.GetValue(matchedModel + " Default") == null) Log.Information($"Failed to model match: {matchedModel} Default");
                 matchedModel = (string)models.GetValue($"{matchedModel} Default") ?? installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title ?? "Airbus A320 Neo Asobo";
             }
-            Console.WriteLine($"Model matched {model} {airline} with: {matchedModel}");
+            Log.Information($"Model matched {model} {airline} with: {matchedModel}");
             return matchedModel;
         }
 

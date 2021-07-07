@@ -5,6 +5,8 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.FlightSimulator.SimConnect;
 using Sentry;
+using Serilog;
+using Serilog.Core;
 using Simvars.Emum;
 using Simvars.Model;
 using Simvars.Struct;
@@ -86,6 +88,15 @@ namespace Simvars
 
         public SimvarsViewModel()
         {
+            Logger log = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Hour)
+                .CreateLogger();
+            Log.Logger = log;
+
+            Log.Information($"Application started");
+
             using (SentrySdk.Init(o =>
             {
                 o.Dsn = "https://0992ad58083f40cda51d04f3ccfc190f@o252778.ingest.sentry.io/5846102";
@@ -120,10 +131,10 @@ namespace Simvars
         {
             _liveTrafficHandler?.LiveTrafficAircraft?.ForEach(item =>
             {
-                Console.WriteLine("Setting waypoint manual objectId " + item.ObjectId);
+                Log.Information("Setting waypoint manual objectId " + item.ObjectId);
                 if (!_clicked)
                 {
-                    Console.WriteLine(@"Going to eindhoven");
+                    Log.Information(@"Going to eindhoven");
                     var wp = new SIMCONNECT_DATA_WAYPOINT[1];
 
                     wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED |
@@ -141,7 +152,7 @@ namespace Simvars
                 }
                 else
                 {
-                    Console.WriteLine(@"Going to Live Location");
+                    Log.Information(@"Going to Live Location");
                     var wp = new SIMCONNECT_DATA_WAYPOINT[1];
 
                     wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED |
@@ -162,7 +173,7 @@ namespace Simvars
 
         private void Connect()
         {
-            Console.WriteLine(@"Connect");
+            Log.Information(@"Connect");
 
             _plane = new PlayerAircraft();
 
@@ -189,7 +200,7 @@ namespace Simvars
             }
             catch (COMException ex)
             {
-                Console.WriteLine(@"Connection to KH failed: " + ex.Message);
+                Log.Error(@"Connection to KH failed: " + ex.Message);
             }
         }
 
@@ -200,14 +211,14 @@ namespace Simvars
 
         private void SimConnect_OnRecvAssignedObjectId(SimConnect sender, SIMCONNECT_RECV_ASSIGNED_OBJECT_ID data)
         {
-            Console.WriteLine(@"Recieved object ID " + data.dwObjectID + @" from request: " + data.dwRequestID);
+            Log.Information(@"Recieved object ID " + data.dwObjectID + @" from request: " + data.dwRequestID);
             _liveTrafficHandler.SetObjectId(data.dwRequestID, data.dwObjectID);
         }
 
         private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
-            Console.WriteLine(@"SimConnect_OnRecvOpen");
-            Console.WriteLine(@"Connected to KH");
+            Log.Information(@"SimConnect_OnRecvOpen");
+            Log.Information(@"Connected to KH");
 
             _dataTimer = new Timer(DataTimerCallback, null, 0, 1000 * 10);
 
@@ -249,8 +260,8 @@ namespace Simvars
         /// The case where the user closes game
         private void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            Console.WriteLine(@"SimConnect_OnRecvQuit");
-            Console.WriteLine(@"KH has exited");
+            Log.Information(@"SimConnect_OnRecvQuit");
+            Log.Information(@"KH has exited");
 
             Disconnect();
         }
@@ -258,7 +269,7 @@ namespace Simvars
         private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
             var eException = (SIMCONNECT_EXCEPTION)data.dwException;
-            Console.WriteLine("SimConnect_OnRecvException: " + eException);
+            Log.Information("SimConnect_OnRecvException: " + eException);
 
             lErrorMessages.Add("SimConnect : " + eException);
         }
@@ -271,7 +282,7 @@ namespace Simvars
 
         private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
         {
-            Console.WriteLine(@"SimConnect_OnRecvSimobjectDataBytype");
+            Log.Information(@"SimConnect_OnRecvSimobjectDataBytype");
 
             var iRequest = data.dwRequestID;
             var iObject = data.dwObjectID;
@@ -301,7 +312,7 @@ namespace Simvars
         // May not be the best way to achive regular requests. See SimConnect.RequestDataOnSimObject
         private void OnTick(object sender, EventArgs e)
         {
-            Console.WriteLine(@"OnTick");
+            Log.Information(@"OnTick");
 
             bOddTick = !bOddTick;
 
@@ -327,7 +338,7 @@ namespace Simvars
                 }
                 catch (COMException ex)
                 {
-                    Console.WriteLine("Unable to connect to KH: " + ex.Message);
+                    Log.Error("Unable to connect to KH: " + ex.Message);
                 }
             else
                 Disconnect();
@@ -364,7 +375,7 @@ namespace Simvars
 
         private void AddRequest(string sNewSimvarRequest, string sNewUnitRequest, bool bIsString)
         {
-            Console.WriteLine(@"AddRequest");
+            Log.Information(@"AddRequest");
 
             //string sNewSimvarRequest = _sOverrideSimvarRequest != null ? _sOverrideSimvarRequest : ((m_iIndexRequest == 0) ? m_sSimvarRequest : (m_sSimvarRequest + ":" + m_iIndexRequest));
             //string sNewUnitRequest = _sOverrideUnitRequest != null ? _sOverrideUnitRequest : m_sUnitRequest;
@@ -426,7 +437,7 @@ namespace Simvars
         public void Disconnect()
         {
             _dataTimer.Dispose();
-            Console.WriteLine(@"Disconnect");
+            Log.Information(@"Disconnect");
 
             _mOTimer.Stop();
             bOddTick = false;

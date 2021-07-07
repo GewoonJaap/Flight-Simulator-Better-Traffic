@@ -2,6 +2,7 @@
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Sentry;
+using Serilog;
 using Simvars.Model;
 
 namespace Simvars.Util
@@ -19,6 +20,7 @@ namespace Simvars.Util
             catch (Exception ex)
             {
                 _ = SentrySdk.CaptureException(ex);
+                Log.Error($"Failed fetching settings, {ex.Message}");
                 settings = new Settings()
                 {
                     CommunityFolderPath = "PATH_HERE",

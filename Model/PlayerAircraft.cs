@@ -1,6 +1,7 @@
 ﻿using Simvars.Struct;
 using System;
 using System.Collections.Generic;
+using Serilog;
 
 namespace Simvars.Model
 {
@@ -26,7 +27,7 @@ namespace Simvars.Model
 
         public void Update(PlayerAircraftStruct planeStructure)
         {
-            Console.WriteLine("Got data, long: " + Longitude + " lat: " + Latitude);
+            Log.Information("Got data, long: " + Longitude + " lat: " + Latitude);
             Longitude = planeStructure.longitude;
             Latitude = planeStructure.latitude;
             Altitude = planeStructure.altitude;

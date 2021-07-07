@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Sentry;
+using Serilog;
 
 namespace Simvars.Model
 {
@@ -21,6 +22,7 @@ namespace Simvars.Model
             catch (Exception ex)
             {
                 _ = SentrySdk.CaptureException(ex);
+                Log.Error(ex.Message);
             }
         }
     }
