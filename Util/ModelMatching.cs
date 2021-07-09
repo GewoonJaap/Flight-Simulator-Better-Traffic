@@ -38,7 +38,7 @@ namespace Simvars.Util
                 if (models.GetValue(matchedModel + " Default") == null) Log.Information($"Failed to model match: {matchedModel} Default");
                 matchedModel = (string)models.GetValue($"{matchedModel} Default") ?? installedAddons.FirstOrDefault(addon => addon.ModelCode == modelCode)?.Title ?? "Airbus A320 Neo Asobo";
             }
-            Log.Information($"Model matched {model} {airline} with: {matchedModel}");
+            Log.Information($"Model matched model: {model}, airline: {airline} with: {matchedModel}");
             return matchedModel;
         }
 

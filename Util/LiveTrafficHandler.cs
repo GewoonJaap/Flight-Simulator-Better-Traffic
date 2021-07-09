@@ -40,7 +40,7 @@ namespace Simvars.Util
             Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.RequestId == requestId);
             if (aircraft != null)
             {
-                Log.Information("Setting object ID for: " + aircraft.Callsign);
+                Log.Information($"Setting object ID: {objectId} for: {aircraft.Callsign}");
                 aircraft.ObjectId = objectId;
 
                 PositionData position = new PositionData

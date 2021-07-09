@@ -312,7 +312,6 @@ namespace Simvars
         // May not be the best way to achive regular requests. See SimConnect.RequestDataOnSimObject
         private void OnTick(object sender, EventArgs e)
         {
-            Log.Information(@"OnTick");
 
             bOddTick = !bOddTick;
 
