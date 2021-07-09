@@ -59,7 +59,7 @@ namespace Simvars.Util
                 }
                 catch (Exception)
                 {
-                    Log.Information("Failed to read json, ignoring this.");
+                    Log.Information($"Failed to read json of {addonDirectory}, ignoring this.");
                 }
 
                 if (File.Exists(finalDirectory + "\\aircraft.cfg"))

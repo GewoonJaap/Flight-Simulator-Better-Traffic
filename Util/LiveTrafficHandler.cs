@@ -187,8 +187,12 @@ namespace Simvars.Util
 
                 var requestId = DataRequests.AI_SPAWN + _requestCount;
                 Log.Information(@"Deleting a plane " + plane.TailNumber + " request ID: " + _requestCount);
-                _requestCount = (_requestCount + 1) % 10000;
-                _simConnect.AIRemoveObject(plane.ObjectId, requestId);
+                if (plane.ObjectId != 0)
+                {
+                    _requestCount = (_requestCount + 1) % 10000;
+                    _simConnect.AIRemoveObject(plane.ObjectId, requestId);
+                }
+
                 removedPlanes.Add(plane);
             });
             removedPlanes.ForEach(plane =>
