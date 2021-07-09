@@ -269,7 +269,7 @@ namespace Simvars
         private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
             var eException = (SIMCONNECT_EXCEPTION)data.dwException;
-            Log.Information("SimConnect_OnRecvException: " + eException);
+            Log.Error($"SimConnect_OnRecvException: {eException}, this could be related to a request above.");
 
             lErrorMessages.Add("SimConnect : " + eException);
         }
