@@ -60,7 +60,7 @@ namespace Simvars.Util
 
         private void ParsePlaneData(JObject planeData)
         {
-            List<String> flightRadarIds = new List<string>();
+            List<string> flightRadarIds = new List<string>();
             foreach (JProperty property in planeData.Properties())
             {
                 //Determine if object is a plane, we only want planes from the api, not the other stat keys ;)
@@ -72,7 +72,7 @@ namespace Simvars.Util
                 double longitude = (double)property.Value[2];
                 double latitude = (double)property.Value[1];
                 int heading = (int)property.Value[3];
-                double altimeter = (int)property.Value[4] * 0.3048;
+                double altimeter = (int) property.Value[4];// * 0.3048;
                 int speed = (int)property.Value[5];
                 string callsign = (string)property.Value[16];
                 bool isGrounded = (bool)property.Value[14];
