@@ -62,13 +62,13 @@ namespace Simvars.Util
             {
                 foundAircraft = installedAddons.First(addon => addon.Title.StartsWith(model) && addon.Icao_Airline == icao).Title;
             }
-            else if (installedAddons.FirstOrDefault(addon => addon.Title.StartsWith(modelcode) && (addon.Title.Contains(icao) || addon.Title.Contains(airline))) != null)
+            else if (installedAddons.FirstOrDefault(addon => (addon.Title.StartsWith(modelcode) || addon.Title.StartsWith(model)) && (addon.Title.Contains(icao) || addon.Title.Contains(airline))) != null)
             {
-                foundAircraft = installedAddons.First(addon => addon.Title.StartsWith(modelcode) && (addon.Title.Contains(icao) || addon.Title.Contains(airline))).Title;
+                foundAircraft = installedAddons.First(addon => (addon.Title.StartsWith(modelcode) || addon.Title.StartsWith(model)) && (addon.Title.Contains(icao) || addon.Title.Contains(airline))).Title;
             }
-            else if (installedAddons.FirstOrDefault(addon => string.Equals(addon.ModelCode, modelcode, StringComparison.CurrentCultureIgnoreCase) && (addon.Title.Contains(icao) || addon.Title.Contains(airline))) != null)
+            else if (installedAddons.FirstOrDefault(addon => addon.ModelCode == modelcode && (addon.Title.Contains(icao) || addon.Title.Contains(airline))) != null)
             {
-                foundAircraft = installedAddons.First(addon => string.Equals(addon.ModelCode, modelcode, StringComparison.CurrentCultureIgnoreCase) && (addon.Title.Contains(icao) || addon.Title.Contains(airline))).Title;
+                foundAircraft = installedAddons.First(addon => addon.ModelCode == modelcode && (addon.Title.Contains(icao) || addon.Title.Contains(airline))).Title;
             }
 
             return foundAircraft;

@@ -92,6 +92,10 @@ namespace Simvars.Util
                     {
                         extraData = (JObject)extraData["data"];
                     }
+                    else
+                    {
+                        Log.Error($"Failed to fetch extra data for {callsign}");
+                    }
                     try
                     {
                         tailNumber = (string)extraData["identification"]?["number"]?["default"] ?? callsign;
@@ -104,7 +108,7 @@ namespace Simvars.Util
                     }
                     catch (Exception e)
                     {
-                        Log.Error($"Failed to gather extra data for {callsign}");
+                        Log.Error($"Failed to parse extra data for {callsign}");
                     }
 
                     aircraft = new Aircraft()
