@@ -7,7 +7,7 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:simvars="clr-namespace:Simvars" d:DataContext="{d:DesignInstance Type=simvars:SimvarsViewModel}"
         mc:Ignorable="d"
-        Title="Enhanced Live Traffic | Mr. Proper" Height="700" Width="1015" MinWidth="800" MinHeight="700">
+        Title="Enhanced Live Traffic | Mr. Proper" Height="700" Width="1085" MinWidth="800" MinHeight="700">
 
     <Window.Resources>
     </Window.Resources>
@@ -43,6 +43,7 @@
                     <GridViewColumn Header="Airline" Width="80" DisplayMemberBinding="{Binding airline}" />
                     <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
                     <GridViewColumn Header="Speed" Width="70" DisplayMemberBinding="{Binding speed}" />
+                    <GridViewColumn Header="Altitude" Width="70" DisplayMemberBinding="{Binding altimeter}" />
                 </GridView>
             </ListView.View>
         </ListView>

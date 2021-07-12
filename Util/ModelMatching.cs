@@ -50,17 +50,17 @@ namespace Simvars.Util
             {
                 foundAircraft = installedAddons.First(addon => addon.Title.StartsWith($"{matchedModel} {aircraft.airline} AI")).Title;
             }
-            else if (installedAddons.FirstOrDefault(addon => addon.Title.StartsWith($"{matchedModel} {aircraft.airline}")) != null)
+            else if (installedAddons.FirstOrDefault(addon => addon.Title.Contains($"{matchedModel} {aircraft.airline}")) != null)
             {
-                foundAircraft = installedAddons.First(addon => addon.Title.StartsWith($"{matchedModel} {aircraft.airline}")).Title;
+                foundAircraft = installedAddons.First(addon => addon.Title.Contains($"{matchedModel} {aircraft.airline}")).Title;
             }
-            else if (installedAddons.FirstOrDefault(addon => addon.Title.StartsWith(matchedModel) && addon.Icao_Airline == aircraft.icaoAirline) != null)
+            else if (installedAddons.FirstOrDefault(addon => addon.Title.Contains(matchedModel) && addon.Icao_Airline == aircraft.icaoAirline) != null)
             {
-                foundAircraft = installedAddons.First(addon => addon.Title.StartsWith(matchedModel) && addon.Icao_Airline == aircraft.icaoAirline).Title;
+                foundAircraft = installedAddons.First(addon => addon.Title.Contains(matchedModel) && addon.Icao_Airline == aircraft.icaoAirline).Title;
             }
-            else if (installedAddons.FirstOrDefault(addon => (addon.Title.StartsWith(aircraft.modelCode) || addon.Title.StartsWith(matchedModel)) && (addon.Title.Contains(aircraft.icaoAirline) || addon.Title.Contains(aircraft.airline))) != null)
+            else if (installedAddons.FirstOrDefault(addon => (addon.Title.Contains(aircraft.modelCode) || addon.Title.Contains(matchedModel)) && (addon.Title.Contains(aircraft.icaoAirline) || addon.Title.Contains(aircraft.airline))) != null)
             {
-                foundAircraft = installedAddons.First(addon => (addon.Title.StartsWith(aircraft.modelCode) || addon.Title.StartsWith(matchedModel)) && (addon.Title.Contains(aircraft.icaoAirline) || addon.Title.Contains(aircraft.airline))).Title;
+                foundAircraft = installedAddons.First(addon => (addon.Title.Contains(aircraft.modelCode) || addon.Title.Contains(matchedModel)) && (addon.Title.Contains(aircraft.icaoAirline) || addon.Title.Contains(aircraft.airline))).Title;
             }
             else if (installedAddons.FirstOrDefault(addon => addon.ModelCode == aircraft.modelCode && (addon.Title.Contains(aircraft.icaoAirline) || addon.Title.Contains(aircraft.airline))) != null)
             {

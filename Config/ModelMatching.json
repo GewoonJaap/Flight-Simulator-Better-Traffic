@@ -86,6 +86,7 @@
   "Hawker 750": "Cessna CJ4 Citation",
   "Bombardier Global 6000": "Cessna CJ4 Citation",
   "Bombardier Global 5000": "Cessna CJ4 Citation",
+  "Bombardier Challenger 605": "Cessna CJ4 Citation",
   "Beech 390 Premier I": "Cessna CJ4 Citation",
   "Pilatus PC-24": "Cessna CJ4 Citation",
   "Dassault Falcon 2000LX": "Cessna CJ4 Citation",
@@ -93,9 +94,11 @@
   "Learjet 45": "Cessna CJ4 Citation",
   "Dassault Falcon 7X": "Cessna CJ4 Citation",
   "Learjet 40": "Cessna CJ4 Citation",
+  "Learjet 35A": "Cessna CJ4 Citation",
   "Cessna 560XL Citation Excel": "Cessna CJ4 Citation",
   "Nextant 400XT": "Cessna CJ4 Citation",
   "Gulfstream G450": "Cessna CJ4 Citation",
+  "Gulfstream GV-SP G-550": "Cessna CJ4 Citation",
   "Raytheon Hawker 850XP": "Cessna CJ4 Citation",
   "Hawker Beechcraft 1000": "Cessna CJ4 Citation",
   "Cessba 650 Citation VI": "Cessna CJ4 Citation",
@@ -155,7 +158,14 @@
   "CRJ7": "CRJ700ER",
   "CRJ9": "CRJ700ER",
   "CRJ700ER": "CRJ700ER",
-  "CRJ700ER Default": "CRJ550ER Privat D-ALKI"
+  "CRJ700ER Default": "CRJ550ER Privat D-ALKI",
+  "Piper PA-18-150": "Savage Cub",
+  "Savage Cub": "Savage Cub",
+  "Savage Cub Default": "Asobo Savage Cub",
+  "Diamond DA40": "DA40-NG",
+  "DA42": "DA40-NG",
+  "DA40-NG": "DA40-NG",
+  "DA40-NG Default": "DA40-NG Asobo"
 }
 //How does model matching work? Lets say "Boeing 787-9 Dreamliner" is detected, the modelmatcher will now search for an aircraft with the key: "Boeing 787-9 Dreamliner", this will return "Boeing 787-10"
 //The modelmatcher will now append the livery name, lets say "KLM", this results in: "Boeing 787-10 KLM", if this livery is found, it will use this aircraft, if it isn't, it will fallback to: "Boeing 787-10 Default" (It appends default to the value gotten from the key),

@@ -109,7 +109,7 @@ namespace Simvars.Util
                         icaoAirline = "";
                     }
                 }
-                if (!line.ToLower().StartsWith("title") && !line.ToLower().StartsWith("icao_type_designator") && !line.ToLower().StartsWith("icao_airline")) continue;
+                if (!line.ToLower().StartsWith("title") && !line.ToLower().StartsWith("icao_type_designator") && !line.ToLower().StartsWith("icao_airline") && !line.ToLower().StartsWith("atc_airline")) continue;
 
                 string value = line.Split('=')[1].Trim();
                 if (value.StartsWith("\""))
@@ -125,6 +125,8 @@ namespace Simvars.Util
                 {
                     value = value.Split(';')[0].Trim();
                 }
+
+                if(value.Trim() == "") continue;
 
                 if (line.ToLower().StartsWith("title"))
                 {

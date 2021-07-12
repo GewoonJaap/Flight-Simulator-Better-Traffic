@@ -223,14 +223,18 @@ namespace Simvars
         private void DataTimerCallback(object? state)
         {
             _liveTrafficHandler.FetchNewData(_plane);
-            Application.Current.Dispatcher.Invoke(delegate // <--- HERE
+            try
             {
-                spawnedPlanes.Clear();
-                _liveTrafficHandler.LiveTrafficAircraft.ForEach(plane =>
+                Application.Current.Dispatcher.Invoke(delegate // <--- HERE
                 {
-                    spawnedPlanes.Add(plane);
+                    spawnedPlanes.Clear();
+                    _liveTrafficHandler.LiveTrafficAircraft.ForEach(plane => { spawnedPlanes.Add(plane); });
                 });
-            });
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Failed to update plane list, {ex.Message}");
+            }
         }
 
         private void SimConnect_OnRecvAssignedObjectId(SimConnect sender, SIMCONNECT_RECV_ASSIGNED_OBJECT_ID data)
