@@ -93,13 +93,14 @@
   "Learjet 45": "Cessna CJ4 Citation",
   "Dassault Falcon 7X": "Cessna CJ4 Citation",
   "Learjet 40": "Cessna CJ4 Citation",
-  "Cessna 525B CitationJet CJ3": "Cessna CJ4 Citation",
   "Cessna 560XL Citation Excel": "Cessna CJ4 Citation",
   "Nextant 400XT": "Cessna CJ4 Citation",
   "Gulfstream G450": "Cessna CJ4 Citation",
   "Raytheon Hawker 850XP": "Cessna CJ4 Citation",
   "Hawker Beechcraft 1000": "Cessna CJ4 Citation",
+  "Cessba 650 Citation VI": "Cessna CJ4 Citation",
   "Cessna 525B CitationJet CJ3+": "Cessna CJ4 Citation",
+  "Cessna 525B CitationJet CJ3": "Cessna CJ4 Citation",
   "Cessna 650 Citation III": "Cessna CJ4 Citation",
   "Cessna 510 Citation Mustang": "Cessna CJ4 Citation",
   "Cessna 560XLS Citation Excel": "Cessna CJ4 Citation",
@@ -152,6 +153,7 @@
   "CRJ-1000EL": "CRJ700ER",
   "CRJX": "CRJ700ER",
   "CRJ7": "CRJ700ER",
+  "CRJ9": "CRJ700ER",
   "CRJ700ER": "CRJ700ER",
   "CRJ700ER Default": "CRJ550ER Privat D-ALKI"
 }

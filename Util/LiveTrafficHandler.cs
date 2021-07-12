@@ -82,7 +82,7 @@ namespace Simvars.Util
                 string tailNumber = callsign;
                 string model = "Airbus A320 Neo";
                 string modelCode = "A320";
-                string airline = "Asobo";
+                string airline = "";
 
                 if (aircraft == null)
                 {
@@ -96,12 +96,18 @@ namespace Simvars.Util
                     {
                         Log.Error($"Failed to fetch extra data for {callsign}");
                     }
+                    foreach (char c in callsign)
+                    {
+                        if (char.IsDigit(c)) break;
+                        airline += c;
+                    }
+
                     try
                     {
                         tailNumber = (string)extraData["identification"]?["number"]?["default"] ?? callsign;
                         model = (string)extraData["aircraft"]?["model"]?["text"] ?? "Airbus A320 Neo";
                         modelCode = (string)extraData["aircraft"]?["model"]?["code"] ?? "A32N";
-                        airline = (string)extraData["airline"]?["name"] ?? "Asobo";
+                        airline = (string)extraData["airline"]?["name"] ?? airline;
                         airportOrigin = (string)extraData["airport"]?["origin"]?["code"]?["icao"] ?? null;
 
                         airportDestination = (string)extraData["airport"]?["destination"]?["code"]?["icao"] ?? null;
@@ -109,12 +115,7 @@ namespace Simvars.Util
                     catch (Exception e)
                     {
                         Log.Error($"Failed to parse extra data for {callsign}");
-                        airline = "";
-                        foreach (char c in callsign)
-                        {
-                            if (char.IsDigit(c)) break;
-                            airline += c;
-                        }
+
                     }
 
                     aircraft = new Aircraft()
