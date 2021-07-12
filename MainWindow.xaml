@@ -28,11 +28,6 @@
                   Grid.Column="1" SelectionChanged="lv_Simvars_SelectionChanged" IsEnabled="True" ItemsSource="{Binding spawnedPlanes}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding bStillPending}" Value="True">
-                            <Setter Property="Background" Value="#55D3D373" />
-                        </DataTrigger>
-                    </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ContextMenu>
@@ -44,9 +39,10 @@
                 <GridView>
                     <GridViewColumn Header="Callsign" Width="80" DisplayMemberBinding="{Binding callsign}" />
                     <GridViewColumn Header="Model" Width="200" DisplayMemberBinding="{Binding model}" />
-                    <GridViewColumn Header="Airline" Width="150" DisplayMemberBinding="{Binding airline}" />
+                    <GridViewColumn Header="Model Code" Width="80" DisplayMemberBinding="{Binding modelCode}" />
+                    <GridViewColumn Header="Airline" Width="80" DisplayMemberBinding="{Binding airline}" />
                     <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
-                    <GridViewColumn Header="Speed" Width="80" DisplayMemberBinding="{Binding speed}" />
+                    <GridViewColumn Header="Speed" Width="70" DisplayMemberBinding="{Binding speed}" />
                 </GridView>
             </ListView.View>
         </ListView>

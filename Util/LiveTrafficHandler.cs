@@ -109,6 +109,12 @@ namespace Simvars.Util
                     catch (Exception e)
                     {
                         Log.Error($"Failed to parse extra data for {callsign}");
+                        airline = "";
+                        foreach (char c in callsign)
+                        {
+                            if (char.IsDigit(c)) break;
+                            airline += c;
+                        }
                     }
 
                     aircraft = new Aircraft()
@@ -129,7 +135,7 @@ namespace Simvars.Util
                         modelCode = modelCode,
                         icaoAirline = icaoAirline
                     };
-                    aircraft.matchedModel = ModelMatching.MatchModel(aircraft.modelCode, aircraft.model, aircraft.airline, aircraft.icaoAirline, _addons);
+                    aircraft.matchedModel = ModelMatching.MatchModel(aircraft, _addons);
 
                     LiveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
