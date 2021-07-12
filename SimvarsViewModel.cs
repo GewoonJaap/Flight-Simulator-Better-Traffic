@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows;
 using System.Windows.Threading;
 using Microsoft.FlightSimulator.SimConnect;
 using Sentry;
@@ -86,6 +88,8 @@ namespace Simvars
 
         private PlayerAircraft _plane;
 
+        public ObservableCollection<Aircraft> spawnedPlanes { get; set; } = new();
+
         public SimvarsViewModel()
         {
             Logger log = new LoggerConfiguration()
@@ -131,7 +135,7 @@ namespace Simvars
         {
             _liveTrafficHandler?.LiveTrafficAircraft?.ForEach(item =>
             {
-                Log.Information("Setting waypoint manual objectId " + item.ObjectId);
+                Log.Information("Setting waypoint manual objectId " + item.objectId);
                 if (!_clicked)
                 {
                     Log.Information(@"Going to eindhoven");
@@ -147,7 +151,7 @@ namespace Simvars
 
                     var obj = new object[wp.Length];
                     wp.CopyTo(obj, 0);
-                    _mOSimConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, item.ObjectId,
+                    _mOSimConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, item.objectId,
                         SIMCONNECT_DATA_SET_FLAG.DEFAULT, obj);
                 }
                 else
@@ -157,14 +161,14 @@ namespace Simvars
 
                     wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED |
                                           SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
-                    wp[0].Altitude = item.Altimeter;
-                    wp[0].Latitude = item.Latitude;
-                    wp[0].Longitude = item.Longitude;
-                    wp[0].ktsSpeed = item.Speed;
+                    wp[0].Altitude = item.altimeter;
+                    wp[0].Latitude = item.latitude;
+                    wp[0].Longitude = item.longitude;
+                    wp[0].ktsSpeed = item.speed;
 
                     var obj = new object[wp.Length];
                     wp.CopyTo(obj, 0);
-                    _mOSimConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, item.ObjectId,
+                    _mOSimConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, item.objectId,
                         SIMCONNECT_DATA_SET_FLAG.DEFAULT, obj);
                 }
             });
@@ -207,6 +211,14 @@ namespace Simvars
         private void DataTimerCallback(object? state)
         {
             _liveTrafficHandler.FetchNewData(_plane);
+            Application.Current.Dispatcher.Invoke(delegate // <--- HERE
+            {
+                spawnedPlanes.Clear();
+                _liveTrafficHandler.LiveTrafficAircraft.ForEach(plane =>
+                {
+                    spawnedPlanes.Add(plane);
+                });
+            });
         }
 
         private void SimConnect_OnRecvAssignedObjectId(SimConnect sender, SIMCONNECT_RECV_ASSIGNED_OBJECT_ID data)
@@ -312,7 +324,6 @@ namespace Simvars
         // May not be the best way to achive regular requests. See SimConnect.RequestDataOnSimObject
         private void OnTick(object sender, EventArgs e)
         {
-
             bOddTick = !bOddTick;
 
             foreach (var oSimvarRequest in lSimvarRequests)

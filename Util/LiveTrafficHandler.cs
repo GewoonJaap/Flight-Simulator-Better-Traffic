@@ -37,24 +37,24 @@ namespace Simvars.Util
 
         public void SetObjectId(uint requestId, uint objectId)
         {
-            Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.RequestId == requestId);
+            Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.requestId == requestId);
             if (aircraft != null)
             {
-                Log.Information($"Setting object ID: {objectId} for: {aircraft.Callsign}");
-                aircraft.ObjectId = objectId;
+                Log.Information($"Setting object ID: {objectId} for: {aircraft.callsign}");
+                aircraft.objectId = objectId;
 
                 PositionData position = new PositionData
                 {
-                    Latitude = aircraft.Latitude,
-                    Longitude = aircraft.Longitude,
-                    Altitude = aircraft.Altimeter,
-                    Heading = aircraft.Heading,
+                    Latitude = aircraft.latitude,
+                    Longitude = aircraft.longitude,
+                    Altitude = aircraft.altimeter,
+                    Heading = aircraft.heading,
                     Pitch = 0,
                     Bank = 0,
-                    Airspeed = (uint)aircraft.Speed,
-                    OnGround = (uint)(aircraft.IsGrounded ? 1 : 0)
+                    Airspeed = (uint)aircraft.speed,
+                    OnGround = (uint)(aircraft.isGrounded ? 1 : 0)
                 };
-                _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
             }
         }
 
@@ -67,12 +67,12 @@ namespace Simvars.Util
                 if (!char.IsDigit(property.Name.ToCharArray()[0])) continue;
                 flightRadarIds.Add(property.Name);
 
-                Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.FlightRadarId == property.Name);
+                Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.flightRadarId == property.Name);
 
                 double longitude = (double)property.Value[2];
                 double latitude = (double)property.Value[1];
                 int heading = (int)property.Value[3];
-                double altimeter = (int) property.Value[4];// * 0.3048;
+                double altimeter = (int)property.Value[4];// * 0.3048;
                 int speed = (int)property.Value[5];
                 string callsign = (string)property.Value[16];
                 bool isGrounded = (bool)property.Value[14];
@@ -109,36 +109,36 @@ namespace Simvars.Util
 
                     aircraft = new Aircraft()
                     {
-                        Longitude = longitude,
-                        Latitude = latitude,
-                        Heading = heading,
-                        Altimeter = altimeter,
-                        Speed = speed,
-                        Callsign = callsign,
-                        FlightRadarId = property.Name,
-                        IsGrounded = isGrounded,
-                        TailNumber = tailNumber,
-                        Model = model,
-                        Airline = airline,
-                        AirportOrigin = airportOrigin,
-                        AirportDestination = airportDestination,
-                        ModelCode = modelCode,
-                        IcaoAirline = icaoAirline
+                        longitude = longitude,
+                        latitude = latitude,
+                        heading = heading,
+                        altimeter = altimeter,
+                        speed = speed,
+                        callsign = callsign,
+                        flightRadarId = property.Name,
+                        isGrounded = isGrounded,
+                        tailNumber = tailNumber,
+                        model = model,
+                        airline = airline,
+                        airportOrigin = airportOrigin,
+                        airportDestination = airportDestination,
+                        modelCode = modelCode,
+                        icaoAirline = icaoAirline
                     };
-                    aircraft.MatchedModel = ModelMatching.MatchModel(aircraft.ModelCode, aircraft.Model, aircraft.Airline, aircraft.IcaoAirline, _addons);
+                    aircraft.matchedModel = ModelMatching.MatchModel(aircraft.modelCode, aircraft.model, aircraft.airline, aircraft.icaoAirline, _addons);
 
                     LiveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
                     continue;
                 }
 
-                if (aircraft.ObjectId == 0) continue;
+                if (aircraft.objectId == 0) continue;
 
-                if (!aircraft.IsGrounded)
+                if (!aircraft.isGrounded)
                 {
-                    Log.Information("Updating a flying plane " + aircraft.TailNumber + " lat: " + latitude + " long: " + longitude + " request ID: " + aircraft.RequestId + " speed: " + speed + " heading: " + heading + " objectId " + aircraft.ObjectId);
+                    Log.Information("Updating a flying plane " + aircraft.tailNumber + " lat: " + latitude + " long: " + longitude + " request ID: " + aircraft.requestId + " speed: " + speed + " heading: " + heading + " objectId " + aircraft.objectId);
 
-                    aircraft.Waypoints.Add(new Waypoint()
+                    aircraft.waypoints.Add(new Waypoint()
                     {
                         Altitude = altimeter,
                         IsGrounded = isGrounded,
@@ -151,28 +151,28 @@ namespace Simvars.Util
                 {
                     PositionData position = new PositionData
                     {
-                        Latitude = aircraft.Latitude,
-                        Longitude = aircraft.Longitude,
-                        Altitude = aircraft.Altimeter,
-                        Heading = aircraft.Heading,
+                        Latitude = aircraft.latitude,
+                        Longitude = aircraft.longitude,
+                        Altitude = aircraft.altimeter,
+                        Heading = aircraft.heading,
                         Pitch = 0,
                         Bank = 0,
-                        Airspeed = (uint)aircraft.Speed,
+                        Airspeed = (uint)aircraft.speed,
                         OnGround = 1
                     };
-                    Log.Information("Updating a grounded plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId + " speed: " + aircraft.Speed + " heading: " + aircraft.Heading + " objectId " + aircraft.ObjectId);
+                    Log.Information("Updating a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
 
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
-                aircraft.Latitude = latitude;
-                aircraft.Longitude = longitude;
-                aircraft.Altimeter = altimeter;
-                aircraft.Heading = heading;
-                aircraft.Speed = speed;
-                aircraft.IsGrounded = isGrounded;
+                aircraft.latitude = latitude;
+                aircraft.longitude = longitude;
+                aircraft.altimeter = altimeter;
+                aircraft.heading = heading;
+                aircraft.speed = speed;
+                aircraft.isGrounded = isGrounded;
 
                 _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints,
-                    aircraft.ObjectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
+                    aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
             }
 
             DespawnOldPlanes(flightRadarIds);
@@ -183,14 +183,14 @@ namespace Simvars.Util
             List<Aircraft> removedPlanes = new List<Aircraft>();
             LiveTrafficAircraft.ForEach(plane =>
             {
-                if (flightradarIds.Contains(plane.FlightRadarId)) return;
+                if (flightradarIds.Contains(plane.flightRadarId)) return;
 
                 var requestId = DataRequests.AI_SPAWN + _requestCount;
-                Log.Information(@"Deleting a plane " + plane.TailNumber + " request ID: " + _requestCount);
-                if (plane.ObjectId != 0)
+                Log.Information(@"Deleting a plane " + plane.tailNumber + " request ID: " + _requestCount);
+                if (plane.objectId != 0)
                 {
                     _requestCount = (_requestCount + 1) % 10000;
-                    _simConnect.AIRemoveObject(plane.ObjectId, requestId);
+                    _simConnect.AIRemoveObject(plane.objectId, requestId);
                 }
 
                 removedPlanes.Add(plane);
@@ -204,21 +204,21 @@ namespace Simvars.Util
         private void SpawnPlane(Aircraft aircraft)
         {
             var requestId = DataRequests.AI_SPAWN + _requestCount;
-            aircraft.RequestId = (10000 + _requestCount);
-            Log.Information(@"Spawning a plane " + aircraft.TailNumber + " lat: " + aircraft.Latitude + " long: " + aircraft.Longitude + " request ID: " + aircraft.RequestId);
+            aircraft.requestId = (10000 + _requestCount);
+            Log.Information(@"Spawning a plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId);
             _requestCount = (_requestCount + 1) % 10000;
             var position = new SIMCONNECT_DATA_INITPOSITION
             {
-                Latitude = aircraft.Latitude,
-                Longitude = aircraft.Longitude,
-                Altitude = aircraft.Altimeter,
+                Latitude = aircraft.latitude,
+                Longitude = aircraft.longitude,
+                Altitude = aircraft.altimeter,
                 Pitch = 0,
                 Bank = 0,
-                Heading = aircraft.Heading,
-                OnGround = (uint)(aircraft.IsGrounded ? 0 : 1),
-                Airspeed = (uint)aircraft.Speed,
+                Heading = aircraft.heading,
+                OnGround = (uint)(aircraft.isGrounded ? 0 : 1),
+                Airspeed = (uint)aircraft.speed,
             };
-            _simConnect.AICreateNonATCAircraft(aircraft.MatchedModel, aircraft.TailNumber, position, requestId);
+            _simConnect.AICreateNonATCAircraft(aircraft.matchedModel, aircraft.tailNumber, position, requestId);
         }
     }
 }
