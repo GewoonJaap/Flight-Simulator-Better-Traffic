@@ -122,10 +122,10 @@
   "Piper PA-28-181 Archer II": "Bonanza G36",
   "Piper PA-28RT-201T": "Bonanza G36",
   "Mooney M-20K": "Bonanza G36",
+  "Cessna 337B": "Bonanza G36",
   "Beech G36 Bonanza": "Bonanza G36",
   "Bonanza G36": "Bonanza G36",
   "Bonanza G36 Default": "Bonanza G36 Asobo",
-  "Airbus Helicopter H135": "Airbus H135",
   "EC35": "Airbus H135",
   "EC75": "Airbus H135",
   "EC45": "Airbus H135",
@@ -143,11 +143,17 @@
   "AS32": "Airbus H135",
   "Airbus H145": "Airbus H135",
   "Airbus H135": "Airbus H135",
+  "Airbus Helicopter H135": "Airbus H135",
   "Airbus H135 Default": "Airbus H135",
   "BE9L": "Beechcraft King Air 350i",
   "Beech 90 King Air": "Beechcraft King Air 350i",
   "Beechcraft King Air 350i": "Beechcraft King Air 350i",
-  "Beechcraft King Air 350i Default": "Beechcraft King Air 350i Asobo"
+  "Beechcraft King Air 350i Default": "Beechcraft King Air 350i Asobo",
+  "CRJ-1000EL": "CRJ700ER",
+  "CRJX": "CRJ700ER",
+  "CRJ7": "CRJ700ER",
+  "CRJ700ER": "CRJ700ER",
+  "CRJ700ER Default": "CRJ550ER Privat D-ALKI"
 }
 //How does model matching work? Lets say "Boeing 787-9 Dreamliner" is detected, the modelmatcher will now search for an aircraft with the key: "Boeing 787-9 Dreamliner", this will return "Boeing 787-10"
 //The modelmatcher will now append the livery name, lets say "KLM", this results in: "Boeing 787-10 KLM", if this livery is found, it will use this aircraft, if it isn't, it will fallback to: "Boeing 787-10 Default" (It appends default to the value gotten from the key),
