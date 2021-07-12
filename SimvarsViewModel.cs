@@ -139,15 +139,27 @@ namespace Simvars
                 if (!_clicked)
                 {
                     Log.Information(@"Going to eindhoven");
-                    var wp = new SIMCONNECT_DATA_WAYPOINT[1];
+                    var wp = new SIMCONNECT_DATA_WAYPOINT[3];
 
-                    wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED |
-                                          SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND |
-                                          SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+                    wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
                     wp[0].Altitude = 0;
-                    wp[0].Latitude = 51.452165;
-                    wp[0].Longitude = 5.376859;
-                    wp[0].ktsSpeed = 0;
+                    wp[0].Latitude = 51.460557;
+                    wp[0].Longitude = 5.386274;
+                    wp[0].ktsSpeed = 15;
+
+                    wp[1].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED
+
+                                       );
+                    wp[1].Altitude = 0;
+                    wp[1].Latitude = 51.456122;
+                    wp[1].Longitude = 5.381370;
+                    wp[1].ktsSpeed = 15;
+
+                    wp[2].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
+                    wp[2].Altitude = 0;
+                    wp[2].Latitude = 51.455226;
+                    wp[2].Longitude = 5.383666;
+                    wp[2].ktsSpeed = 0;
 
                     var obj = new object[wp.Length];
                     wp.CopyTo(obj, 0);
@@ -172,7 +184,7 @@ namespace Simvars
                         SIMCONNECT_DATA_SET_FLAG.DEFAULT, obj);
                 }
             });
-            _clicked = !_clicked;
+            // _clicked = !_clicked;
         }
 
         private void Connect()
