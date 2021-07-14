@@ -17,6 +17,7 @@ namespace Simvars.Util
         private int _requestCount = 0;
         private int MaxPlanes = 40;
         private List<Addon> _addons;
+        private readonly int _teleportFixDelay = 40;
 
         public LiveTrafficHandler(SimConnect simConnect)
         {
@@ -72,7 +73,7 @@ namespace Simvars.Util
                 double longitude = (double)property.Value[2];
                 double latitude = (double)property.Value[1];
                 int heading = (int)property.Value[3];
-                double altimeter = (int)property.Value[4];// * 0.3048;
+                double altimeter = Math.Round((int)property.Value[4] * 0.3048);
                 int speed = (int)property.Value[5];
                 string callsign = (string)property.Value[16];
                 bool isGrounded = (bool)property.Value[14];
@@ -115,7 +116,6 @@ namespace Simvars.Util
                     catch (Exception e)
                     {
                         Log.Error($"Failed to parse extra data for {callsign}");
-
                     }
 
                     aircraft = new Aircraft()
@@ -134,7 +134,9 @@ namespace Simvars.Util
                         airportOrigin = airportOrigin,
                         airportDestination = airportDestination,
                         modelCode = modelCode,
-                        icaoAirline = icaoAirline
+                        icaoAirline = icaoAirline,
+                        isTeleportFixed = isGrounded,
+                        spawnTime = DateTime.Now
                     };
                     aircraft.matchedModel = ModelMatching.MatchModel(aircraft, _addons);
 
@@ -157,6 +159,24 @@ namespace Simvars.Util
                         Longitude = longitude,
                         Speed = speed
                     });
+
+                    if (!aircraft.isTeleportFixed && (DateTime.Now - aircraft.spawnTime).Seconds > _teleportFixDelay)
+                    {
+                        aircraft.isTeleportFixed = true;
+                        PositionData position = new PositionData
+                        {
+                            Latitude = latitude,
+                            Longitude = longitude,
+                            Altitude = altimeter,
+                            Heading = heading,
+                            Pitch = 0,
+                            Bank = 0,
+                            Airspeed = (uint)speed,
+                            OnGround = 0
+                        };
+                        Log.Debug($"Teleport fixing: {aircraft.tailNumber}");
+                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                    }
                 }
                 else
                 {
@@ -175,8 +195,12 @@ namespace Simvars.Util
 
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
-                aircraft.latitude = latitude;
-                aircraft.longitude = longitude;
+
+                if (!aircraft.isTeleportFixed)
+                {
+                    aircraft.latitude = latitude;
+                    aircraft.longitude = longitude;
+                }
                 aircraft.altimeter = altimeter;
                 aircraft.heading = heading;
                 aircraft.speed = speed;
@@ -186,7 +210,14 @@ namespace Simvars.Util
                     aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
             }
 
-            DespawnOldPlanes(flightRadarIds);
+            try
+            {
+                DespawnOldPlanes(flightRadarIds);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error when trying to despawn aircraft, {ex.Message}");
+            }
         }
 
         private void DespawnOldPlanes(List<string> flightradarIds)
