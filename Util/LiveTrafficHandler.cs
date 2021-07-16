@@ -55,7 +55,11 @@ namespace Simvars.Util
                     Airspeed = (uint)aircraft.speed,
                     OnGround = (uint)(aircraft.isGrounded ? 1 : 0)
                 };
-                _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                // _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation,
+                // aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                var request = DataRequests.AI_RELEASE + _requestCount;
+                _requestCount = (_requestCount + 1) % 10000;
+                _simConnect.AIReleaseControl(objectId, request);
             }
         }
 
@@ -196,11 +200,9 @@ namespace Simvars.Util
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 }
 
-                if (!aircraft.isTeleportFixed)
-                {
-                    aircraft.latitude = latitude;
-                    aircraft.longitude = longitude;
-                }
+                aircraft.latitude = latitude;
+                aircraft.longitude = longitude;
+
                 aircraft.altimeter = altimeter;
                 aircraft.heading = heading;
                 aircraft.speed = speed;
