@@ -100,6 +100,7 @@ namespace Simvars.Util
                     else
                     {
                         Log.Error($"Failed to fetch extra data for {callsign}");
+                        continue;
                     }
                     foreach (char c in callsign)
                     {
