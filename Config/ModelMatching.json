@@ -192,7 +192,16 @@
   "DR40": "DR400",
   "Robin DR400/140B": "DR400",
   "DR400": "DR400",
-  "DR400 Default": "DR400 Asobo"
+  "DR400 Default": "DR400 Asobo",
+  "WHK2": "white-knight-two",
+  "A3DC2A": "white-knight-two",
+  "Scaled 348 \"White Knight Two\"": "white-knight-two",
+  "white-knight-two": "white-knight-two",
+  "white-knight-two Default": "white-knight-two",
+  "VSS Unity": "spaceship-two",
+  "A19B53": "spaceship-two",
+  "spaceship-two": "spaceship-two",
+  "spaceship-two Default": "spaceship-two"
 }
 //How does model matching work? Lets say "Boeing 787-9 Dreamliner" is detected, the modelmatcher will now search for an aircraft with the key: "Boeing 787-9 Dreamliner", this will return "Boeing 787-10"
 //The modelmatcher will now append the livery name, lets say "KLM", this results in: "Boeing 787-10 KLM", if this livery is found, it will use this aircraft, if it isn't, it will fallback to: "Boeing 787-10 Default" (It appends default to the value gotten from the key),
