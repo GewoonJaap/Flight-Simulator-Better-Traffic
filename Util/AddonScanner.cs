@@ -55,7 +55,7 @@ namespace Simvars.Util
                 try
                 {
                     JObject manifest = JObject.Parse(File.ReadAllText(addonDirectory + "\\manifest.json"));
-                    if (((string)manifest["content_type"])?.ToLower() != "aircraft") continue;
+                    if (((string)manifest["content_type"])?.ToLower() != "aircraft" && ((string)manifest["content_type"])?.ToLower() != "livery") continue;
                 }
                 catch (Exception)
                 {
@@ -96,6 +96,7 @@ namespace Simvars.Util
             string title = "";
             string modelCode = "";
             string icaoAirline = "";
+            int foundBaseAircraft = 0;
             foreach (string line in lines)
             {
                 // Use a tab to indent each line of the file.
@@ -126,7 +127,7 @@ namespace Simvars.Util
                     value = value.Split(';')[0].Trim();
                 }
 
-                if(value.Trim() == "") continue;
+                if (value.Trim() == "") continue;
 
                 if (line.ToLower().StartsWith("title"))
                 {
@@ -134,6 +135,10 @@ namespace Simvars.Util
                 }
                 else if (line.ToLower().StartsWith("icao_type_designator"))
                 {
+                    if (foundBaseAircraft == 0)
+                    {
+                        foundBaseAircraft = 1;
+                    }
                     modelCode = value;
                 }
                 else
@@ -141,14 +146,16 @@ namespace Simvars.Util
                     icaoAirline = value;
                 }
 
-                if (curentAddon == null)
-                {
-                    curentAddon = new Addon();
-                }
+                curentAddon ??= new Addon();
 
                 curentAddon.Title = title.Trim();
                 curentAddon.ModelCode = modelCode.Trim();
                 curentAddon.Icao_Airline = icaoAirline.Trim();
+                if (foundBaseAircraft == 1)
+                {
+                    curentAddon.BaseAircraft = true;
+                    foundBaseAircraft = 2;
+                }
             }
 
             if (curentAddon != null && !curentAddon.Title.Contains("AirTraffic"))

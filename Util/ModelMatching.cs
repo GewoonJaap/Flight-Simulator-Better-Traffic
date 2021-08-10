@@ -16,7 +16,7 @@ namespace Simvars.Util
 
             Log.Information($"Model matching: {aircraft.model} with airline: {aircraft.airline}, airline ICAO Code: {aircraft.icaoAirline} and modelCode {aircraft.modelCode}");
             JObject models = JObject.Parse(File.ReadAllText(@".\Config\ModelMatching.json"));
-            string matchedModel = (string)models.GetValue(aircraft.model) ?? (string)models.GetValue(aircraft.modelCode) ?? installedAddons.FirstOrDefault(addon => (addon.ModelCode == aircraft.modelCode || addon.Title.Contains(aircraft.shortModel) || addon.Title.Contains(aircraft.shorterModelCode)) && addon.Icao_Airline == "")?.Title ?? installedAddons.FirstOrDefault(addon => addon.ModelCode.Contains(aircraft.shorterModelCode) || addon.Title.Contains(aircraft.shorterModelCode))?.Title ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
+            string matchedModel = (string)models.GetValue(aircraft.model) ?? (string)models.GetValue(aircraft.modelCode) ?? installedAddons.FirstOrDefault(addon => ((addon.ModelCode == aircraft.modelCode || addon.Title.Contains(aircraft.shortModel) || addon.Title.Contains(aircraft.shorterModelCode)) && addon.Icao_Airline == "") && addon.BaseAircraft)?.Title ?? installedAddons.FirstOrDefault(addon => (addon.ModelCode == aircraft.modelCode || addon.Title.Contains(aircraft.shortModel) || addon.Title.Contains(aircraft.shorterModelCode)) && addon.Icao_Airline == "")?.Title ?? installedAddons.FirstOrDefault(addon => addon.ModelCode.Contains(aircraft.shorterModelCode) || addon.Title.Contains(aircraft.shorterModelCode))?.Title ?? (string)models.GetValue("Default Aircraft") ?? "Airbus A320 Neo";
 
             matchedModel = matchedModel.Replace("Asobo", "")?.Trim();
 

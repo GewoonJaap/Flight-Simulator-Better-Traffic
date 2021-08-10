@@ -77,7 +77,7 @@ namespace Simvars.Util
                 double longitude = (double)property.Value[2];
                 double latitude = (double)property.Value[1];
                 int heading = (int)property.Value[3];
-                double altimeter = Math.Round((int)property.Value[4] * 0.3048);
+                double altimeter = (int)property.Value[4];//Math.Round((int)property.Value[4] * 0.3048);
                 int speed = (int)property.Value[5];
                 string callsign = (string)property.Value[16];
                 bool isGrounded = (bool)property.Value[14];
