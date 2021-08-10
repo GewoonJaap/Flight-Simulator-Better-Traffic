@@ -201,7 +201,13 @@
   "VSS Unity": "spaceship-two",
   "A19B53": "spaceship-two",
   "spaceship-two": "spaceship-two",
-  "spaceship-two Default": "spaceship-two"
+  "spaceship-two Default": "spaceship-two",
+  "E190": "Virtualcol Embraer",
+  "E195": "Virtualcol Embraer",
+  "E75L": "Virtualcol Embraer",
+  "Embraer": "Virtualcol Embraer",
+  "Virtualcol Embraer": "Virtualcol Embraer",
+  "Virtualcol Embraer Default": "Virtualcol Embraer 170 Air France"
 }
 //How does model matching work? Lets say "Boeing 787-9 Dreamliner" is detected, the modelmatcher will now search for an aircraft with the key: "Boeing 787-9 Dreamliner", this will return "Boeing 787-10"
 //The modelmatcher will now append the livery name, lets say "KLM", this results in: "Boeing 787-10 KLM", if this livery is found, it will use this aircraft, if it isn't, it will fallback to: "Boeing 787-10 Default" (It appends default to the value gotten from the key),
