@@ -152,6 +152,12 @@ namespace Simvars.Util
                     };
                     aircraft.matchedModel = ModelMatching.MatchModel(aircraft, _addons);
 
+                    // Mauflo: This will fix the Problem wit airports under the sea level - but only till 10 feet under the level ;-)
+                    if (aircraft.altimeter <= 0 && aircraft.speed <= 30)
+                    {
+                        aircraft.isGrounded = true; aircraft.altimeter = -10;
+                    }
+
                     LiveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
                     continue;
