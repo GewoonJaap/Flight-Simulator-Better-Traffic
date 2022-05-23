@@ -15,6 +15,10 @@ namespace Simvars.Model
 
         public bool isTeleportFixed { get; set; } = false;
         public DateTime spawnTime { get; set; }
+        public DateTime corrTime { get; set; }
+        public DateTime corrTime1 { get; set; }
+        public string onceFixAltitudeCallsign { get; set; }
+        public bool onceSetGround { get; set; } = false;
 
         #endregion SimData
 
@@ -46,6 +50,7 @@ namespace Simvars.Model
         public string airportDestination { get; set; }
 
         public List<Waypoint> waypoints { get; set; } = new();
+        public double altimeterFeet { get;  set; }
 
         #endregion FlightPath
 
@@ -57,7 +62,7 @@ namespace Simvars.Model
             {
                 if (waypoints[i].IsGrounded)
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED);
                 }
                 else
                 {
@@ -83,14 +88,14 @@ namespace Simvars.Model
 
             if (isGrounded)
             {
-                wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+                wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
             }
             else
             {
-                wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL);
+                wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED);
             }
 
-            wp[0].Altitude = altimeter;
+            wp[0].Altitude = altimeter * 2; // for a better altitude performance calculation for the AI plane;
             wp[0].Latitude = latitude;
             wp[0].Longitude = longitude;
             wp[0].ktsSpeed = speed;

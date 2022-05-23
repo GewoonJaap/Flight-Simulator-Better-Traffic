@@ -7,7 +7,7 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:simvars="clr-namespace:Simvars" d:DataContext="{d:DesignInstance Type=simvars:SimvarsViewModel}"
         mc:Ignorable="d"
-        Title="Enhanced Live Traffic | Mr. Proper" Height="700" Width="1085" MinWidth="800" MinHeight="700">
+        Title="Enhanced Live Traffic | Mr. Proper - with improvements 0.2 from Mauflo12961" Height="700" Width="1085" MinWidth="800" MinHeight="700">
 
     <Window.Resources>
     </Window.Resources>
@@ -38,12 +38,12 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Callsign" Width="80" DisplayMemberBinding="{Binding callsign}" />
-                    <GridViewColumn Header="Model" Width="200" DisplayMemberBinding="{Binding model}" />
-                    <GridViewColumn Header="Model Code" Width="80" DisplayMemberBinding="{Binding modelCode}" />
-                    <GridViewColumn Header="Airline" Width="80" DisplayMemberBinding="{Binding airline}" />
-                    <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
                     <GridViewColumn Header="Speed" Width="70" DisplayMemberBinding="{Binding speed}" />
-                    <GridViewColumn Header="Altitude" Width="70" DisplayMemberBinding="{Binding altimeter}" />
+                    <GridViewColumn Header="Altitude" Width="70" DisplayMemberBinding="{Binding altimeterFeet}" />
+                    <GridViewColumn Header="Model Code" Width="80" DisplayMemberBinding="{Binding modelCode}" />
+                    <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
+                    <GridViewColumn Header="Model" Width="200" DisplayMemberBinding="{Binding model}" />
+                    <GridViewColumn Header="Airline" Width="80" DisplayMemberBinding="{Binding airline}" />
                 </GridView>
             </ListView.View>
         </ListView>
@@ -84,8 +84,10 @@
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
+        <Border x:Name="Performance_Setting_Border" BorderBrush="Black" BorderThickness="1" Grid.ColumnSpan="2" Margin="10,249,839,236" IsEnabled="False"/>
+        <Label x:Name="Performance_Settings" Content="Performance Settings" HorizontalAlignment="Left" Margin="11,218,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="165"/>
         <CheckBox Content="Use FSX-compatible configuration" IsChecked="{Binding bFSXcompatible, Mode=TwoWay}"
-                  HorizontalAlignment="Left" Margin="29,121,0,0" VerticalAlignment="Top" Width="217"
+                  HorizontalAlignment="Left" Margin="20,259,0,0" VerticalAlignment="Top" Width="216"
                   Grid.ColumnSpan="2" />
     </Grid>
 </Window>

@@ -247,9 +247,7 @@ namespace Simvars
         {
             Log.Information(@"SimConnect_OnRecvOpen");
             Log.Information(@"Connected to KH");
-
             _dataTimer = new Timer(DataTimerCallback, null, 0, 1000 * 10);
-
             sConnectButtonLabel = "Disconnect";
             bConnected = true;
 
@@ -271,8 +269,8 @@ namespace Simvars
                 SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneLocation, "Plane Bank Degrees", "degrees",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-            _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneLocation, "Plane Heading Degrees True",
-                "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneLocation, "Plane Heading Degrees True", "degrees",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneLocation, "AIRSPEED TRUE", "knots",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneWaypoints, "AI WAYPOINT LIST", "number",
