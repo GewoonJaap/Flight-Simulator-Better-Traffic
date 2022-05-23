@@ -532,7 +532,8 @@ namespace Simvars
         public bool bHighAltitudeTraffic
         {
             get => _mbHighAltitudeTraffic;
-            set { SetProperty(ref _mbHighAltitudeTraffic, value);
+            set { 
+                SetProperty(ref _mbHighAltitudeTraffic, value);
                 _liveTrafficHandler.HighAltitudeTraffic = value;
             }
         }
