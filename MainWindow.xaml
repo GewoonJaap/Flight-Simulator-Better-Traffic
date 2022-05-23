@@ -48,6 +48,8 @@
                     <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
                     <GridViewColumn Header="Model" Width="200" DisplayMemberBinding="{Binding model}" />
                     <GridViewColumn Header="Airline" Width="80" DisplayMemberBinding="{Binding airline}" />
+                    <GridViewColumn Header="Departure" Width="80" DisplayMemberBinding="{Binding airportOrigin}" />
+                    <GridViewColumn Header="Destination" Width="80" DisplayMemberBinding="{Binding airportDestination}" />
                 </GridView>
             </ListView.View>
         </ListView>
