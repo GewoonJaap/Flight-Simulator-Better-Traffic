@@ -19,7 +19,7 @@ namespace Simvars.Util
         private List<Addon> _addons;
         private readonly int _teleportFixDelay = 30;
 
-        public bool HighAltitudeTraffic { get; private set; }
+        public bool HighAltitudeTraffic { get; set; }
 
         public LiveTrafficHandler(SimConnect simConnect)
         {

@@ -197,7 +197,7 @@ namespace Simvars
             {
                 /// The constructor is similar to SimConnect_Open in the native API
                 _mOSimConnect = new SimConnect("Simconnect - Enhanced Live Traffic", _mHWnd, WM_USER_SIMCONNECT, null,
-                    bFSXcompatible ? (uint)1 : 0);
+                     0);
 
                 /// Listen to connect and quit msgs
                 _mOSimConnect.OnRecvOpen += SimConnect_OnRecvOpen;
@@ -529,13 +529,15 @@ namespace Simvars
 
         private bool _mBSaveValues = true;
 
-        public bool bFSXcompatible
+        public bool bHighAltitudeTraffic
         {
-            get => _mBFsXcompatible;
-            set => SetProperty(ref _mBFsXcompatible, value);
+            get => _mbHighAltitudeTraffic;
+            set { SetProperty(ref _mbHighAltitudeTraffic, value);
+                _liveTrafficHandler.HighAltitudeTraffic = value;
+            }
         }
 
-        private bool _mBFsXcompatible;
+        private bool _mbHighAltitudeTraffic;
 
         public bool bIsString
         {
