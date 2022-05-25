@@ -16,6 +16,8 @@ namespace Simvars.Model
         public bool isTeleportFixed { get; set; } = false;
         public DateTime spawnTime { get; set; }
         public DateTime corrTime { get; set; }
+        public DateTime corrTimeTaxi { get; set; }
+
         public bool tiktak { get; set; }
         public string onceFixAltitudeCallsign { get; set; }
         public bool onceSetGround { get; set; } = false;
@@ -62,11 +64,11 @@ namespace Simvars.Model
             {
                 if (waypoints[i].IsGrounded)
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED);
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
                 }
                 else
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED);
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED);
         }
                 result[i].Altitude = waypoints[i].Altitude;
                 result[i].Latitude = waypoints[i].Latitude;
