@@ -6,7 +6,7 @@ namespace Simvars.Util
 {
     public static class FlightRadarApi
     {
-        private const double LongitudeModifier = 0.6;// Info for JAAP: Changed from 0.3 for a bigger area
+        private const double LongitudeModifier = 1.0;// Info for JAAP: Changed from 0.3 for a bigger area
         private const double LatitudeModifier =  1.0;// Info for JAAP: Changed from 0.5 for a bigger area
 
         public static JObject GetAircraftData(string flightRadarId)
