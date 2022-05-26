@@ -245,7 +245,7 @@ namespace Simvars.Util
                 //<____________________________________________________>
                 // Here all airliners over 30.000 feet will be teleportet and fly a little then it will teleportet again.
                 // The problem is, that the AI airplane will correct the altitude to ground level after a while. so the altitude will not stay if we not teleport it.
-                if (altimeter > 9144 && aircraft.onceFixAltitudeCallsign == aircraft.callsign) //
+                if (altimeter > 9144 && aircraft.onceFixAltitudeCallsign == aircraft.callsign && aircraft.objectId != 0) //
                 {
                     PositionData position = new PositionData
                     {
@@ -262,7 +262,7 @@ namespace Simvars.Util
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                     _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
                 }
-                if (altimeter > 9144 && aircraft.onceFixAltitudeCallsign != aircraft.callsign) //
+                if (altimeter > 9144 && aircraft.onceFixAltitudeCallsign != aircraft.callsign && aircraft.objectId != 0) //
                 {
                     aircraft.waypoints.Add(new Waypoint()
                     {
