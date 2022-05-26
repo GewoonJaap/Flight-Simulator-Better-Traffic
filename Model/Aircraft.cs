@@ -97,7 +97,7 @@ namespace Simvars.Model
                 wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED);
             }
 
-            wp[0].Altitude = altimeter;// for a better altitude performance calculation for the AI plane;
+            wp[0].Altitude = altimeter;
             wp[0].Latitude = latitude;
             wp[0].Longitude = longitude;
             wp[0].ktsSpeed = speed;

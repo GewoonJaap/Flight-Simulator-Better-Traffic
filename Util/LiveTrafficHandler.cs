@@ -15,7 +15,7 @@ namespace Simvars.Util
         public List<Aircraft> LiveTrafficAircraft;
         private readonly SimConnect _simConnect;
         private int _requestCount = 0;
-        private int MaxPlanes = 40;
+        private int MaxPlanes = 120;
         private List<Addon> _addons;
         private readonly int _teleportFixDelay = 30;
 
@@ -152,10 +152,10 @@ namespace Simvars.Util
                     aircraft.matchedModel = ModelMatching.MatchModel(aircraft, _addons);
 
                     // Mauflo: This will fix the Problem with airports under the sea level - but only lower 100 feet under the level ;-)
-                    if (!aircraft.onceSetGround && aircraft.altimeter <= 0 || aircraft.speed < 30)
+                    /*if (!aircraft.onceSetGround && aircraft.altimeter <= 0 || aircraft.speed < 30)
                     {
                         aircraft.isGrounded = true; aircraft.altimeter = -100; //We should be shure, that the planes get grounded
-                    }
+                    }*/
 
                     LiveTrafficAircraft.Add(aircraft);
                     SpawnPlane(aircraft);
@@ -185,19 +185,22 @@ namespace Simvars.Util
                 }
                 else
                 {
-                    PositionData position = new PositionData
+                    if (aircraft.objectId != 0)
                     {
-                        Latitude = aircraft.latitude,
-                        Longitude = aircraft.longitude,
-                        Altitude = aircraft.altimeter,
-                        Heading = aircraft.heading,
-                        Pitch = 0,
-                        Bank = 0,
-                        Airspeed = (uint)aircraft.speed,
-                        OnGround = 1
-                    };
-                    Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                        PositionData position = new PositionData
+                        {
+                            Latitude = aircraft.latitude,
+                            Longitude = aircraft.longitude,
+                            Altitude = aircraft.altimeter,
+                            Heading = aircraft.heading,
+                            Pitch = 0,
+                            Bank = 0,
+                            Airspeed = (uint)aircraft.speed,
+                            OnGround = 1
+                        };
+                        Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
+                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                    }
                 }
 
                 //if (aircraft.altimeter == 0){ aircraft.isGrounded = true; } //Sometimes the aircrafts are not recognized correctly grounded
@@ -205,23 +208,27 @@ namespace Simvars.Util
                 // Every 10 seconds new data input (ec. nessecary for positioning grounded planes)
                 if (aircraft.isGrounded && !aircraft.onceSetGround)
                 {
-                    aircraft.onceSetGround = true;
-                    aircraft.isGrounded = true;
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
-
-                    PositionData position = new PositionData
+                    if (aircraft.objectId != 0)
                     {
-                        Latitude = aircraft.latitude,
-                        Longitude = aircraft.longitude,
-                        Altitude = aircraft.altimeter,
-                        Heading = aircraft.heading,
-                        Pitch = 0,
-                        Bank = 0,
-                        Airspeed = (uint)aircraft.speed,
-                        OnGround = 1
-                    };
-                    Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                        aircraft.onceSetGround = true;
+                        aircraft.isGrounded = true;
+                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
+
+
+                        PositionData position = new PositionData
+                        {
+                            Latitude = aircraft.latitude,
+                            Longitude = aircraft.longitude,
+                            Altitude = aircraft.altimeter,
+                            Heading = aircraft.heading,
+                            Pitch = 0,
+                            Bank = 0,
+                            Airspeed = (uint)aircraft.speed,
+                            OnGround = 1
+                        };
+                        Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
+                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                    }
 
                 }
                 // That is the function to turn on or off the teleporting of the high altitude traffic
@@ -233,7 +240,7 @@ namespace Simvars.Util
                 {
                     aircraft.onceFixAltitudeCallsign = "";
                 }
-
+                
                 // Correct the Altitude over 30.000ft for that airplane
                 //<____________________________________________________>
                 // Here all airliners over 30.000 feet will be teleportet and fly a little then it will teleportet again.
