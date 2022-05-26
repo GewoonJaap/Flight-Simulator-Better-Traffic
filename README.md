@@ -10,11 +10,17 @@ This **standalone** Flight Simulator addon, injects more accurate live traffic i
 - Open `Enhanced Live Traffic.exe`
 - Press `Connect`, once your simulator is loaded and your plane is spawned in.
 
-
 # Model Matching
 This application supports custom model matching
 - Go to: `Config/ModelMatching.json`
 - Edit the file accordingly.
+
+## Using AIG Liveries
+If you have installed the Liveries from AIG via the “AIG Manager” in your Community folder, the Liveries should work fine. The Enhanced Live Traffic tool will look for the path: “C:\\Users\\Username\\AppData\\Local\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\Packages\\Community\\aig-aitraffic-oci-beta\\SimObjects\\Airplanes\\”
+When your folder will not found because you installed it at another place or once AIG will rename the folder path, then you have to set it manually in: Config/Settings.json
+Therefore you have to set the “AdditionalFolderPath:” to the correct AIG path on your computer.
+Please note, that the path should look like this: F:\\Games\\Flight Simulator\\Community\\
+Make sure you use double backslashes (\\)
 
 ## How to edit?
 

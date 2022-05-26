@@ -166,7 +166,7 @@ namespace Simvars.Util
                 {
                     if ((DateTime.Now - aircraft.corrTime).Seconds > _teleportFixDelay && aircraft.speed > 15 && aircraft.onceFixAltitudeCallsign != aircraft.callsign) // speed>30 = controll if should start or if landing happend onceFixAltitude Airplains should not touched    && aircraft.onceFixAltitudeCallsign != aircraft.callsign
                     {
-                        aircraft.onceFixAltitudeCallsign = callsign;
+                        aircraft.onceFixAltitudeCallsign = aircraft.callsign;
                         aircraft.corrTime = DateTime.Now;// Info for JAAP - This is new because if you don't actualize the time then the fixing will only done once and not every _teleportFixDelay - that means that the airplane fliy straight ahen and does not follow the course
                         if ((aircraft.heading - heading > 5) || (aircraft.heading - heading < 5)) // Correct the route only when necessary
                         {
@@ -225,7 +225,7 @@ namespace Simvars.Util
 
                 }
                 // That is the function to turn on or off the teleporting of the high altitude traffic
-                if (HighAltitudeTraffic)
+                if (HighAltitudeTraffic && altimeter > 9144)
                 {
                     aircraft.onceFixAltitudeCallsign = aircraft.callsign;
                 }
