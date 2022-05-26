@@ -1,4 +1,5 @@
 {
   "CommunityFolderPath": "PATH_HERE",
-  "MaximumAmountOfPlanes": 40
+  "AdditionalFolderPath": "PATH_HERE_AIG"
+  "MaximumAmountOfPlanes": 60
 }

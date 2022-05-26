@@ -24,7 +24,8 @@ namespace Simvars.Util
                 settings = new Settings()
                 {
                     CommunityFolderPath = "PATH_HERE",
-                    MaximumAmountOfPlanes = 40
+                    AdditionalFolderPath = "PATH_HERE_AIG", //Info for JAAP: Extended it for AIG Liveries
+                    MaximumAmountOfPlanes = 60
                 };
                 settings.Save();
             }

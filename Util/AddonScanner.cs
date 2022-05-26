@@ -19,6 +19,7 @@ namespace Simvars.Util
             {
                 string communityFolder = GetCommunityFolder();
                 string officialFolder = communityFolder.Replace("Community", "Official");
+                string additionalFolder = GetAdditionalFolder();
                 if (communityFolder != null) result = GetInstalledAddons(communityFolder);
                 if (Directory.Exists(officialFolder))
                 {
@@ -28,6 +29,15 @@ namespace Simvars.Util
                         officialFolder = officialDirectories[0] + "\\";
                     }
                     result.AddRange(GetInstalledAddons(officialFolder));
+                }
+                if (Directory.Exists(additionalFolder))
+                {
+                    string[] additionalDirectories = Directory.GetDirectories(additionalFolder);
+                    if (additionalDirectories.Length == 1)
+                    {
+                        officialFolder = additionalDirectories[0] + "\\";
+                    }
+                    result.AddRange(GetInstalledAddons(additionalFolder));
                 }
             }
             catch (Exception ex)
@@ -40,7 +50,7 @@ namespace Simvars.Util
             {
                 Log.Information($"Found add-on with title: {addon.Title}, ICAO Airline: {addon.Icao_Airline}, model code: {addon.ModelCode}");
             });
-            Log.Information($"Found {result.Count} installed add-ons in Official and Community folder");
+            Log.Information($"Found {result.Count} installed add-ons in Official,Community and additional folder");
             return result;
         }
 
@@ -208,5 +218,50 @@ namespace Simvars.Util
 
             return addonPath;
         }
+
+        private static string GetAdditionalFolder() //Info for JAAP: Extended it for AIG Liveries
+        {
+            string addonPath = "";
+            string msfsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\UserCfg.opt";
+            string msfsDirectorySteam = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft Flight Simulator\\UserCfg.opt";
+
+            Settings settings = SettingsReader.FetchSettings();
+
+            if (settings.AdditionalFolderPath != "PATH_HERE_AIG" && Directory.Exists(settings.AdditionalFolderPath))
+            {
+                return settings.AdditionalFolderPath;
+            }
+
+            string packagePath = File.Exists(msfsDirectorySteam) ? msfsDirectorySteam : msfsDirectory;
+
+            if (!File.Exists(packagePath))
+            {
+                MessageBox.Show("Failed to find your Additional folder!\nPlease set the location to the Additinoal folder in the 'Config/Settings.json' file and restart the application!\nIgnoring this error will make the livery matching unavailable", "Failed to find Additional Folder");
+                return null;
+            }
+
+            string[] lines = System.IO.File.ReadAllLines(packagePath);
+            foreach (string line in lines)
+            {
+                // Use a tab to indent each line of the file.
+                if (!line.StartsWith("InstalledPackagesPath")) continue;
+
+                addonPath = line.Split('"')[1];
+                addonPath = addonPath.Split('"')[0];
+                addonPath += "\\Community\\aig-aitraffic-oci-beta\\SimObjects\\Airplanes\\";
+
+                //Info for JAAP: should not make a new directory if it is missing
+                //if (!Directory.Exists(addonPath))
+                //{
+                //    Directory.CreateDirectory(addonPath);
+                //}
+            }
+            Log.Information(addonPath);
+            settings.AdditionalFolderPath = addonPath;
+            settings.Save();
+
+            return addonPath;
+        }
+
     }
 }

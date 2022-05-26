@@ -197,7 +197,7 @@ namespace Simvars
             {
                 /// The constructor is similar to SimConnect_Open in the native API
                 _mOSimConnect = new SimConnect("Simconnect - Enhanced Live Traffic", _mHWnd, WM_USER_SIMCONNECT, null,
-                    bFSXcompatible ? (uint)1 : 0);
+                     0);
 
                 /// Listen to connect and quit msgs
                 _mOSimConnect.OnRecvOpen += SimConnect_OnRecvOpen;
@@ -247,9 +247,7 @@ namespace Simvars
         {
             Log.Information(@"SimConnect_OnRecvOpen");
             Log.Information(@"Connected to KH");
-
             _dataTimer = new Timer(DataTimerCallback, null, 0, 1000 * 10);
-
             sConnectButtonLabel = "Disconnect";
             bConnected = true;
 
@@ -271,8 +269,8 @@ namespace Simvars
                 SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneLocation, "Plane Bank Degrees", "degrees",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-            _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneLocation, "Plane Heading Degrees True",
-                "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneLocation, "Plane Heading Degrees True", "degrees",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneLocation, "AIRSPEED TRUE", "knots",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _mOSimConnect.AddToDataDefinition(SimConnectDataDefinition.PlaneWaypoints, "AI WAYPOINT LIST", "number",
@@ -531,13 +529,16 @@ namespace Simvars
 
         private bool _mBSaveValues = true;
 
-        public bool bFSXcompatible
+        public bool bHighAltitudeTraffic
         {
-            get => _mBFsXcompatible;
-            set => SetProperty(ref _mBFsXcompatible, value);
+            get => _mbHighAltitudeTraffic;
+            set { 
+                SetProperty(ref _mbHighAltitudeTraffic, value);
+                _liveTrafficHandler.HighAltitudeTraffic = value;
+            }
         }
 
-        private bool _mBFsXcompatible;
+        private bool _mbHighAltitudeTraffic;
 
         public bool bIsString
         {

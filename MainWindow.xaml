@@ -7,12 +7,16 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:simvars="clr-namespace:Simvars" d:DataContext="{d:DesignInstance Type=simvars:SimvarsViewModel}"
         mc:Ignorable="d"
-        Title="Enhanced Live Traffic | Mr. Proper" Height="700" Width="1085" MinWidth="800" MinHeight="700">
+        Title="Enhanced Live Traffic 3.0 | Developed by Mr. Proper | optimized by Mauflo12961" Height="700" Width="1085" MinWidth="800" MinHeight="700">
 
     <Window.Resources>
     </Window.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="29*"/>
+            <RowDefinition Height="28*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="17*" />
             <ColumnDefinition Width="247*" />
@@ -20,12 +24,12 @@
         <Button x:Name="btn_Connection" Content="{Binding sConnectButtonLabel}" Command="{Binding cmdToggleConnect}"
                 HorizontalAlignment="Left" Margin="29,68,0,0" VerticalAlignment="Top" Width="146" Height="48"
                 Grid.ColumnSpan="2" />
-        <Button x:Name="btn_LoadFile" Content="Manual Waypoint" Command="{Binding cmdLoadFiles}"
+        <!--<Button x:Name="btn_LoadFile" Content="Manual Waypoint" Command="{Binding cmdLoadFiles}"
                 HorizontalAlignment="Left" Margin="29,156,0,0" VerticalAlignment="Top" Width="100" Height="23"
-                RenderTransformOrigin="0.423,0.841" Grid.ColumnSpan="2" />
+                RenderTransformOrigin="0.423,0.841" Grid.ColumnSpan="2" />-->
         <ListView x:Name="lv_Simvars"
                  Margin="219,10,10,10"
-                  Grid.Column="1" SelectionChanged="lv_Simvars_SelectionChanged" IsEnabled="True" ItemsSource="{Binding spawnedPlanes}">
+                  Grid.Column="1" SelectionChanged="lv_Simvars_SelectionChanged" IsEnabled="True" ItemsSource="{Binding spawnedPlanes}" Grid.RowSpan="2">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                 </Style>
@@ -38,12 +42,14 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Callsign" Width="80" DisplayMemberBinding="{Binding callsign}" />
-                    <GridViewColumn Header="Model" Width="200" DisplayMemberBinding="{Binding model}" />
-                    <GridViewColumn Header="Model Code" Width="80" DisplayMemberBinding="{Binding modelCode}" />
-                    <GridViewColumn Header="Airline" Width="80" DisplayMemberBinding="{Binding airline}" />
-                    <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
                     <GridViewColumn Header="Speed" Width="70" DisplayMemberBinding="{Binding speed}" />
-                    <GridViewColumn Header="Altitude" Width="70" DisplayMemberBinding="{Binding altimeter}" />
+                    <GridViewColumn Header="Altitude" Width="70" DisplayMemberBinding="{Binding altimeterFeet}" />
+                    <GridViewColumn Header="Model Code" Width="80" DisplayMemberBinding="{Binding modelCode}" />
+                    <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
+                    <GridViewColumn Header="Model" Width="200" DisplayMemberBinding="{Binding model}" />
+                    <GridViewColumn Header="Airline" Width="80" DisplayMemberBinding="{Binding airline}" />
+                    <GridViewColumn Header="Departure" Width="80" DisplayMemberBinding="{Binding airportOrigin}" />
+                    <GridViewColumn Header="Destination" Width="80" DisplayMemberBinding="{Binding airportDestination}" />
                 </GridView>
             </ListView.View>
         </ListView>
@@ -68,11 +74,11 @@
             </Ellipse.Style>
         </Ellipse>
 
-        <Label Content="Errors" HorizontalAlignment="Left" Margin="10,454,0,0" VerticalAlignment="Top" Height="23"
-               Width="83" Grid.ColumnSpan="2" />
+        <Label Content="Errors" HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top" Height="23"
+               Width="83" Grid.ColumnSpan="2" Grid.Row="1" />
 
         <ListBox ItemsSource="{Binding lErrorMessages}" RenderTransformOrigin="0.5,0.5" Width="236"
-                 HorizontalAlignment="Left" Margin="10,482,0,10" Grid.ColumnSpan="2">
+                 HorizontalAlignment="Left" Margin="10,134,0,10" Grid.ColumnSpan="2" Grid.Row="1">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Foreground" Value="Red" />
@@ -84,8 +90,8 @@
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
-        <CheckBox Content="Use FSX-compatible configuration" IsChecked="{Binding bFSXcompatible, Mode=TwoWay}"
-                  HorizontalAlignment="Left" Margin="29,121,0,0" VerticalAlignment="Top" Width="217"
-                  Grid.ColumnSpan="2" />
+        <Label x:Name="Performance_Settings" Content="Performance Settings" HorizontalAlignment="Left" Margin="11,218,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="165"/>
+        <CheckBox Content="High altitude traffic mode" IsChecked="{Binding bHighAltitudeTraffic, Mode=TwoWay}" Margin="20,259,0,0" VerticalAlignment="Top"
+                  Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16" />
     </Grid>
 </Window>

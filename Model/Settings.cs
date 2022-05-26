@@ -8,6 +8,7 @@ namespace Simvars.Model
     public class Settings
     {
         public string CommunityFolderPath;
+        public string AdditionalFolderPath;
         public int MaximumAmountOfPlanes;
 
         public void Save()
