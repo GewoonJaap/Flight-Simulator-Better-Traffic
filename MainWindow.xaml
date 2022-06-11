@@ -7,29 +7,26 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:simvars="clr-namespace:Simvars" d:DataContext="{d:DesignInstance Type=simvars:SimvarsViewModel}"
         mc:Ignorable="d"
-        Title="Enhanced Live Traffic 3.01a | Developed by Mr. Proper | optimized by Mauflo12961" Height="700" Width="1085" MinWidth="800" MinHeight="700">
+        Title="Enhanced Live Traffic 3.01 | Developed by Mr. Proper | optimized by Mauflo12961" Height="700" Width="1085" MinWidth="800" MinHeight="700">
 
     <Window.Resources>
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="29*"/>
-            <RowDefinition Height="28*"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="17*" />
-            <ColumnDefinition Width="247*" />
+            <ColumnDefinition Width="10*" />
+            <ColumnDefinition Width="207*" />
         </Grid.ColumnDefinitions>
-        <Button x:Name="btn_Connection" Content="{Binding sConnectButtonLabel}" Command="{Binding cmdToggleConnect}"
-                HorizontalAlignment="Left" Margin="29,68,0,0" VerticalAlignment="Top" Width="146" Height="48"
-                Grid.ColumnSpan="2" />
+        <Button x:Name="btn_Connection" Content="{Binding sConnectButtonLabel}" Command="{Binding cmdToggleConnect}" Margin="43,68,0,0" VerticalAlignment="Top" Height="48" HorizontalAlignment="Left" Width="146" Grid.ColumnSpan="2" />
         <!--<Button x:Name="btn_LoadFile" Content="Manual Waypoint" Command="{Binding cmdLoadFiles}"
                 HorizontalAlignment="Left" Margin="29,156,0,0" VerticalAlignment="Top" Width="100" Height="23"
                 RenderTransformOrigin="0.423,0.841" Grid.ColumnSpan="2" />-->
         <ListView x:Name="lv_Simvars"
-                 Margin="219,10,10,10"
-                  Grid.Column="1" SelectionChanged="lv_Simvars_SelectionChanged" IsEnabled="True" ItemsSource="{Binding spawnedPlanes}" Grid.RowSpan="2">
+                 Margin="219,10,10,10" 
+                  Grid.Column="1" SelectionChanged="lv_Simvars_SelectionChanged" IsEnabled="True" ItemsSource="{Binding spawnedPlanes}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                 </Style>
@@ -43,13 +40,14 @@
                 <GridView>
                     <GridViewColumn Header="Callsign" Width="80" DisplayMemberBinding="{Binding callsign}" />
                     <GridViewColumn Header="Speed" Width="70" DisplayMemberBinding="{Binding speed}" />
-                    <GridViewColumn Header="Altitude" Width="70" DisplayMemberBinding="{Binding altimeterFeet}" />
+                    <GridViewColumn Header="Altitude Org" Width="70" DisplayMemberBinding="{Binding altimeter}" />
                     <GridViewColumn Header="Model Code" Width="80" DisplayMemberBinding="{Binding modelCode}" />
                     <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
                     <GridViewColumn Header="Model" Width="200" DisplayMemberBinding="{Binding model}" />
                     <GridViewColumn Header="Airline" Width="80" DisplayMemberBinding="{Binding airline}" />
                     <GridViewColumn Header="Departure" Width="80" DisplayMemberBinding="{Binding airportOrigin}" />
                     <GridViewColumn Header="Destination" Width="80" DisplayMemberBinding="{Binding airportDestination}" />
+                    <GridViewColumn Header="Status" Width="140" DisplayMemberBinding="{Binding infoExclude}" />
                 </GridView>
             </ListView.View>
         </ListView>
@@ -74,11 +72,11 @@
             </Ellipse.Style>
         </Ellipse>
 
-        <Label Content="Errors" HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top" Height="23"
-               Width="83" Grid.ColumnSpan="2" Grid.Row="1" />
+        <Label Content="Errors" HorizontalAlignment="Left" Margin="8,475,0,0" VerticalAlignment="Top" Height="27"
+               Width="83" Grid.ColumnSpan="2" />
 
         <ListBox ItemsSource="{Binding lErrorMessages}" RenderTransformOrigin="0.5,0.5" Width="236"
-                 HorizontalAlignment="Left" Margin="10,134,0,10" Grid.ColumnSpan="2" Grid.Row="1">
+                 HorizontalAlignment="Left" Margin="10,501,0,10" Grid.ColumnSpan="2">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Foreground" Value="Red" />
@@ -90,8 +88,28 @@
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
-        <Label x:Name="Performance_Settings" Content="Performance Settings" HorizontalAlignment="Left" Margin="11,218,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="165"/>
-        <CheckBox Content="High altitude traffic mode" IsChecked="{Binding bHighAltitudeTraffic, Mode=TwoWay}" Margin="20,259,0,0" VerticalAlignment="Top"
-                  Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16" />
+
+        <Label Content="Excluded traffic settings" HorizontalAlignment="Left" Margin="8,145,0,0" VerticalAlignment="Top" Height="27"
+               Width="147" Grid.ColumnSpan="2" FontWeight="Bold" />
+
+        <Rectangle x:Name="Exclude_Frame" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="13,171,0,0" Stroke="Black" Width="233" Opacity="0.5" Height="139" VerticalAlignment="Top"/>
+        <CheckBox Content="GA traffic" IsChecked="{Binding bGaTraffic, Mode=TwoWay}" Margin="20,176,0,0"
+                  Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16" VerticalAlignment="Top"/>
+        <CheckBox Content="Gliders" IsChecked="{Binding bGlidTraffic, Mode=TwoWay}" Margin="20,195,0,0"
+            Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16" VerticalAlignment="Top"/>
+        <CheckBox Content="Airlines" IsChecked="{Binding bAirlTraffic, Mode=TwoWay}" Margin="20,214,0,0"
+            Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16" VerticalAlignment="Top"/>
+        <CheckBox Content="Ground traffic" IsChecked="{Binding bGroundTraffic, Mode=TwoWay}" Margin="20,232,0,0" VerticalAlignment="Top"
+            Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16"/>
+        <CheckBox Content="Low  traffic (&lt; FL 100)" IsChecked="{Binding bLowAltTraffic, Mode=TwoWay}" Margin="20,251,0,0" VerticalAlignment="Top"
+            Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16" Checked="CheckBox_Checked"/>
+        <CheckBox Content="Mid  traffic (&gt;FL 100 &lt;FL 200)" IsChecked="{Binding bMidAltTraffic, Mode=TwoWay}" Margin="20,270,0,0" VerticalAlignment="Top"
+            Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16" Checked="CheckBox_Checked"/>
+        <CheckBox Content="High traffic (&gt;FL 200)" IsChecked="{Binding bHigAltTraffic, Mode=TwoWay}" Margin="20,289,0,0" VerticalAlignment="Top"
+            Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="216" Height="16" Checked="CheckBox_Checked"/>
+        <Rectangle Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="24" Margin="13,338,0,0" Stroke="Black" VerticalAlignment="Top" Width="233"/>
+        <CheckBox Content="High altitude traffic mode" IsChecked="{Binding bHigAltTrafficMode, Mode=TwoWay}" Margin="20,342,0,0"
+            Grid.ColumnSpan="2" Checked="CheckBox_Checked" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"  Height="16" VerticalAlignment="Top" HorizontalAlignment="Left" Width="215"/>
+        <Label Content="Performance setting" HorizontalAlignment="Left" Margin="8,312,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.067,0.314" Grid.ColumnSpan="2" Width="164" Height="28" FontWeight="Bold"/>
     </Grid>
 </Window>

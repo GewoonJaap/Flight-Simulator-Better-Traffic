@@ -57,5 +57,10 @@ namespace Simvars
         private void lv_Simvars_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
         }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
