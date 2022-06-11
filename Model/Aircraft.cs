@@ -16,7 +16,7 @@ namespace Simvars.Model
         public bool isTeleportFixed { get; set; } = false;
         public DateTime spawnTime { get; set; }
         public DateTime corrTime { get; set; }
-        public DateTime corrTimeTaxi { get; set; }
+        public DateTime corrTime1 { get; set; }
 
         public bool tiktak { get; set; }
         public string onceFixAltitudeCallsign { get; set; }
@@ -33,6 +33,7 @@ namespace Simvars.Model
         public string airline { get; set; }
         public string icaoAirline { get; set; }
         public string modelCode { get; set; }
+        public string infoExclude { get; set; }
 
         public string shorterModelCode { get => modelCode.Remove(modelCode.Length - 1, 1); }
 
@@ -41,10 +42,27 @@ namespace Simvars.Model
         #endregion Aircraft
 
         #region FlightPath
-
+        //Variables for later use to collect waypoints
+        /* public int wpCounter = 0;
+        public int altitudeCorrection = 2;
+        public double[] wpLongitude = new double[10];
+        public double[] wpLatitude = new double[10];
+        public double[] wpAltitude = new double[10];
+        public double[] wpAltitudeMeter = new double[10];
+        public int[] wpHeading = new int[10];
+        public int[] wpSpeed = new int[10];
+        public bool[] wpIsGrounded = new bool[10];*/
+        
+        public bool checkDeparting { get; set; }
+        public bool checkApproaching { get; set; }
+        public int countApproaching { get; set; }
+        public int checkAltitude { get; set; }
+        public int checkHeading { get; set; }
+        public bool finnishCollectingWp { get; set; } = false;
         public double latitude { get; set; }
         public double longitude { get; set; }
         public double altimeter { get; set; }
+        public double altimeterMeter{ get; set; }
         public int speed { get; set; }
         public int heading { get; set; }
         public bool isGrounded { get; set; }
@@ -52,7 +70,7 @@ namespace Simvars.Model
         public string airportDestination { get; set; }
 
         public List<Waypoint> waypoints { get; set; } = new();
-        public double altimeterFeet { get;  set; }
+        
 
         #endregion FlightPath
 
@@ -64,11 +82,11 @@ namespace Simvars.Model
             {
                 if (waypoints[i].IsGrounded)
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
-                }
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED); //(SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | 
+        }
                 else
                 {
-                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.COMPUTE_VERTICAL_SPEED);
+                    result[i].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
         }
                 result[i].Altitude = waypoints[i].Altitude;
                 result[i].Latitude = waypoints[i].Latitude;
@@ -90,7 +108,7 @@ namespace Simvars.Model
 
             if (isGrounded)
             {
-                wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED);
+                wp[0].Flags = (uint)(SIMCONNECT_WAYPOINT_FLAGS.SPEED_REQUESTED | SIMCONNECT_WAYPOINT_FLAGS.ALTITUDE_IS_AGL | SIMCONNECT_WAYPOINT_FLAGS.ON_GROUND);
             }
             else
             {

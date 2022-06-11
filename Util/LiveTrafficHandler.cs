@@ -15,10 +15,23 @@ namespace Simvars.Util
         public List<Aircraft> LiveTrafficAircraft;
         private readonly SimConnect _simConnect;
         private int _requestCount = 0;
-        private int MaxPlanes = 120;
+        private int MaxPlanes = 60;
         private List<Addon> _addons;
         private readonly int _teleportFixDelay = 30;
+        private int toOnGround;
 
+        public string excludeAirportOrigin;
+        public string excludeAirportDestination;
+        public string excludeStatus;
+
+        public bool excludeGround { get; set; }
+        public bool ExclGaTraffic { get; set; }
+        public bool ExclGlidTraffic { get; set; }
+        public bool ExclAirlTraffic { get; set; }
+        public bool ExclGroundTraffic { get; set; }
+        public bool ExclLowAltTraffic { get; set; }
+        public bool ExclMidAltTraffic { get; set; }
+        public bool ExclHigAltTraffic { get; set; }
         public bool HighAltitudeTraffic { get; set; }
 
         public LiveTrafficHandler(SimConnect simConnect)
@@ -40,6 +53,7 @@ namespace Simvars.Util
 
         public void SetObjectId(uint requestId, uint objectId)
         {
+
             Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.requestId == requestId);
             if (aircraft != null)
             {
@@ -50,19 +64,20 @@ namespace Simvars.Util
                 {
                     Latitude = aircraft.latitude,
                     Longitude = aircraft.longitude,
-                    Altitude = aircraft.altimeter,
+                    Altitude = aircraft.altimeterMeter,
                     Heading = aircraft.heading,
                     Pitch = 0,
                     Bank = 0,
                     Airspeed = (uint)aircraft.speed,
                     OnGround = (uint)(aircraft.isGrounded ? 1 : 0)
                 };
-                 // _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation,
-                 // aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                // _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation,
+                // aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                 var request = DataRequests.AI_RELEASE + _requestCount;
                 _requestCount = (_requestCount + 1) % 10000;
                 _simConnect.AIReleaseControl(objectId, request);
             }
+
         }
 
         private void ParsePlaneData(JObject planeData)
@@ -79,8 +94,8 @@ namespace Simvars.Util
                 double longitude = (double)property.Value[2];
                 double latitude = (double)property.Value[1];
                 int heading = (int)property.Value[3];
-                int altimeter = (int)Math.Round((int)property.Value[4] * 0.3048); // Info for JAAP: I changed it from (int)property.Value[4]; for the right altitude Math.Round((int)property.Value[4] * 0.3048)
-                int altimeterFeet = (int)property.Value[4];
+                int altimeter = (int)property.Value[4];  //In feet (int)Math.Round((int)property.Value[4] * 0.3048); // Info for JAAP: I changed it from (int)property.Value[4]; for the right altitude Math.Round((int)property.Value[4] * 0.3048)
+                int altimeterMeter = (int)Math.Round((int)property.Value[4] * 0.3048);
                 int speed = (int)property.Value[5];
                 string callsign = (string)property.Value[16];
                 bool isGrounded = (bool)property.Value[14];
@@ -91,7 +106,7 @@ namespace Simvars.Util
                 string model = "Airbus A320 Neo";
                 string modelCode = "A320";
                 string airline = "";
-
+                string infoExclude = "";
                 if (aircraft == null)
                 {
                     if (LiveTrafficAircraft.Count >= MaxPlanes) continue;
@@ -118,21 +133,20 @@ namespace Simvars.Util
                         modelCode = (string)extraData["aircraft"]?["model"]?["code"] ?? "A32N";
                         airline = (string)extraData["airline"]?["name"] ?? airline;
                         airportOrigin = (string)extraData["airport"]?["origin"]?["code"]?["icao"] ?? null;
-
                         airportDestination = (string)extraData["airport"]?["destination"]?["code"]?["icao"] ?? null;
                     }
+
                     catch (Exception e)
                     {
                         Log.Error($"Failed to parse extra data for {callsign}");
                     }
-
                     aircraft = new Aircraft()
                     {
                         longitude = longitude,
                         latitude = latitude,
                         heading = heading,
                         altimeter = altimeter,
-                        altimeterFeet = altimeterFeet,
+                        altimeterMeter = altimeterMeter,
                         speed = speed,
                         callsign = callsign,
                         flightRadarId = property.Name,
@@ -144,32 +158,54 @@ namespace Simvars.Util
                         airportDestination = airportDestination,
                         modelCode = modelCode,
                         icaoAirline = icaoAirline,
-                        isTeleportFixed = isGrounded,
+                        infoExclude = infoExclude,
+                        isTeleportFixed = false,
                         spawnTime = DateTime.Now,
                         corrTime = DateTime.Now,
-                        corrTimeTaxi = DateTime.Now
+                        corrTime1 = DateTime.Now
                     };
                     aircraft.matchedModel = ModelMatching.MatchModel(aircraft, _addons);
+
+
+                    if (!isGrounded)
+                    {
+                        aircraft.countApproaching = 3;
+                    }
+                    else
+                    {
+                        aircraft.countApproaching = 0;
+                    }
 
                     // Mauflo: This will fix the Problem with airports under the sea level - but only lower 100 feet under the level ;-)
                     if (!aircraft.onceSetGround && aircraft.altimeter <= 0 || aircraft.speed < 16)
                     {
                         aircraft.isGrounded = true; aircraft.altimeter = -100; //We should be shure, that the planes get grounded
                     }
+                    if (altimeter <= 0) aircraft.isTeleportFixed = true; // Correct Altitude over 10.000 ft only for aircrafts they are not started from an airport
 
                     LiveTrafficAircraft.Add(aircraft);
-                    SpawnPlane(aircraft);
+
+                    if (!aircraft.infoExclude.Contains("EXCLUDED"))
+                    {
+                        SpawnPlane(aircraft);
+                    }
+
+
                     continue;
                 }
 
-                if (!aircraft.isGrounded)
+                if (aircraft.objectId == 0) continue;
+                
+                if (!aircraft.infoExclude.Contains("EXCLUDED"))
                 {
-                    if ((DateTime.Now - aircraft.corrTime).Seconds > _teleportFixDelay && aircraft.speed > 15 && aircraft.onceFixAltitudeCallsign != aircraft.callsign) // speed>30 = controll if should start or if landing happend onceFixAltitude Airplains should not touched    && aircraft.onceFixAltitudeCallsign != aircraft.callsign
+                    //Here starts the handling for the movement
+                    // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+                    if (!aircraft.isGrounded) // Update a waypoint of an aircraft in flight with every third data retrieval...
                     {
-                        aircraft.onceFixAltitudeCallsign = aircraft.callsign;
-                        aircraft.corrTime = DateTime.Now;// Info for JAAP - This is new because if you don't actualize the time then the fixing will only done once and not every _teleportFixDelay - that means that the airplane fliy straight ahen and does not follow the course
-                        if ((aircraft.heading - heading > 5) || (aircraft.heading - heading < 5)) // Correct the route only when necessary
+                        if ((DateTime.Now - aircraft.corrTime).Seconds > _teleportFixDelay && aircraft.speed > 20 && aircraft.onceFixAltitudeCallsign != aircraft.callsign) // speed>30 = controll if should start or if landing happend onceFixAltitude Airplains should not touched    && aircraft.onceFixAltitudeCallsign != aircraft.callsign
                         {
+                            aircraft.onceFixAltitudeCallsign = aircraft.callsign;
+                            aircraft.corrTime = DateTime.Now;// Info for JAAP - This is new because if you don't actualize the time then the fixing will only done once and not every _teleportFixDelay - that means that the airplane fliy straight ahen and does not follow the course
                             aircraft.waypoints.Add(new Waypoint()
                             {
                                 Latitude = latitude,
@@ -182,107 +218,217 @@ namespace Simvars.Util
                             _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
                         }
                     }
-                }
-                else
-                {
-                    if (aircraft.objectId != 0)
+                    else
                     {
-                        PositionData position = new PositionData
+                        aircraft.isGrounded = false;
+                        if (aircraft.countApproaching == 0) // Grounding only when 30 seconds (delay from start) is over
                         {
-                            Latitude = aircraft.latitude,
-                            Longitude = aircraft.longitude,
-                            Altitude = aircraft.altimeter,
-                            Heading = aircraft.heading,
-                            Pitch = 0,
-                            Bank = 0,
-                            Airspeed = (uint)aircraft.speed,
-                            OnGround = 1
-                        };
-                        Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
-                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                            PositionData position = new PositionData
+                            {
+                                Latitude = aircraft.latitude,
+                                Longitude = aircraft.longitude,
+                                Altitude = aircraft.altimeterMeter,
+                                Heading = aircraft.heading,
+                                Pitch = 0,
+                                Bank = 0,
+                                Airspeed = (uint)aircraft.speed,
+                                OnGround = 1
+                            };
+                            Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
+                            _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                            aircraft.isGrounded = true;
+                        }
+                        if (aircraft.countApproaching > 0) aircraft.countApproaching --;
                     }
-                }
+                    // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
-                //if (aircraft.altimeter == 0){ aircraft.isGrounded = true; } //Sometimes the aircrafts are not recognized correctly grounded
-                // Info for JAAP: That has to happen once, because otherwise there would be no wheels at the grounded Spawn one, and the landing one have to stop the waypoint following
-                // Every 10 seconds new data input (ec. nessecary for positioning grounded planes)
-                if (aircraft.isGrounded && !aircraft.onceSetGround)
-                {
-                    if (aircraft.objectId != 0)
+                    //Here a plane after landing will be grounded (It is important to get the waypoint and positioning to get the wheels on the ground)
+                    //*******************************************
+                    if (aircraft.isGrounded && !aircraft.onceSetGround && aircraft.countApproaching == 0)
                     {
                         aircraft.onceSetGround = true;
                         aircraft.isGrounded = true;
-                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
-
-
+                        
                         PositionData position = new PositionData
                         {
                             Latitude = aircraft.latitude,
                             Longitude = aircraft.longitude,
-                            Altitude = aircraft.altimeter,
+                            Altitude = aircraft.altimeterMeter,
                             Heading = aircraft.heading,
                             Pitch = 0,
                             Bank = 0,
                             Airspeed = (uint)aircraft.speed,
-                            OnGround = 1
+                            OnGround = (uint)(isGrounded ? 0 : 1)
                         };
                         Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
                         _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                     }
+                    //********************************************/
+                    
+                    // That is the function to turn on or off the teleporting of the high altitude traffic
+                    if (HighAltitudeTraffic && altimeter > 9144)
+                    {
+                        aircraft.onceFixAltitudeCallsign = aircraft.callsign;
+                    }
+                    else
+                    {
+                        aircraft.onceFixAltitudeCallsign = "";
+                    }
 
+                    // Correct the Altitude over 30.000ft for that airplane
+                    //<____________________________________________________>
+                    // Here all airliners over 30.000 feet will be teleportet and fly a little then it will teleportet again.
+                    // The problem is, that the AI airplane will correct the altitude to ground level after a while. so the altitude will not stay if we not teleport it.
+                    if (altimeter > 29999 && aircraft.onceFixAltitudeCallsign == aircraft.callsign && aircraft.infoExclude != "HIGH ALT EXCLUDED")
+                    {
+                        PositionData position = new PositionData
+                        {
+                            Latitude = aircraft.latitude,
+                            Longitude = aircraft.longitude,
+                            Altitude = aircraft.altimeterMeter,
+                            Heading = aircraft.heading,
+                            Pitch = 0,
+                            Bank = 0,
+                            Airspeed = (uint)aircraft.speed,
+                            OnGround = 0
+                        };
+                        Log.Information("Changing altitute for a highflying plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
+                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
+                    }
+                    if (altimeter > 29999 && aircraft.onceFixAltitudeCallsign != aircraft.callsign && aircraft.infoExclude != "HIGH ALT EXCLUDED") // && aircraft.objectId != 0
+                    {
+                        aircraft.waypoints.Add(new Waypoint()
+                        {
+                            Latitude = latitude,
+                            Longitude = longitude,
+                            Altitude = altimeter,
+                            Speed = speed,
+                            IsGrounded = isGrounded
+                        });
+                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
+                        aircraft.onceFixAltitudeCallsign = aircraft.callsign;
+                    }
+                    //<____________________________________________________>
                 }
-                // That is the function to turn on or off the teleporting of the high altitude traffic
-                if (HighAltitudeTraffic && altimeter > 9144)
+
+                //Exclude checkbox handling
+                //.-.-.-.-.-.-.-.-.-.-.-.-.
+                //Exclude GA traffic 
+                if (ExclGaTraffic && aircraft.icaoAirline == "" && aircraft.infoExclude != "GA EXCLUDED")
                 {
-                    aircraft.onceFixAltitudeCallsign = aircraft.callsign;
+                    excludeStatus = "Hide";
+                    aircraft.infoExclude = "GA EXCLUDED";
                 }
-                else
+               if (!ExclGaTraffic && aircraft.icaoAirline == "" && aircraft.infoExclude == "GA EXCLUDED")
                 {
-                    aircraft.onceFixAltitudeCallsign = "";
+                    excludeStatus = "Show";
+                    aircraft.infoExclude = "";
+                }
+
+                // Exclude gliders
+                if (ExclGlidTraffic && aircraft.modelCode == "GLID" && aircraft.infoExclude != "GLIDER EXCLUDED")
+                {
+                    excludeStatus = "Hide";
+                    aircraft.infoExclude = "GLIDER EXCLUDED";
+                }
+               if (!ExclGlidTraffic && aircraft.modelCode == "GLID" && aircraft.infoExclude == "GLIDER EXCLUDED")
+                {
+                    excludeStatus = "Show";
+                    aircraft.infoExclude = "";
+                }
+
+                // Exclude airlines
+                if (ExclAirlTraffic && aircraft.icaoAirline != "" && aircraft.infoExclude != "AIRLINES EXCLUDED")
+                {
+                    excludeStatus = "Hide";
+                    aircraft.infoExclude = "AIRLINES EXCLUDED";
+                }
+               if (!ExclAirlTraffic && aircraft.icaoAirline != "" && aircraft.infoExclude == "AIRLINES EXCLUDED")
+                {
+                    excludeStatus = "Show";
+                    aircraft.infoExclude = "";
+                }
+
+                // Exclude ground traffic
+                if (ExclGroundTraffic && altimeter <= 0 && aircraft.infoExclude != "GROUND EXCLUDED")
+                {
+                    excludeStatus = "Hide";
+                    aircraft.infoExclude = "GROUND EXCLUDED";
+                }
+                if (!ExclGroundTraffic && altimeter <= 0 && aircraft.infoExclude == "GROUND EXCLUDED")
+                {
+                    excludeStatus = "Show";
+                    aircraft.infoExclude = "";
+                }
+
+                // Exclude low altitude traffic
+                if (ExclLowAltTraffic && aircraft.altimeter > 0 && aircraft.altimeter <= 9999 && aircraft.infoExclude != "LOW ALT EXCLUDED")
+                {
+                    excludeStatus = "Hide";
+                    aircraft.infoExclude = "LOW ALT EXCLUDED";
+                }
+                else if (!ExclLowAltTraffic && aircraft.altimeter > 0 && aircraft.altimeter <= 9999 && aircraft.infoExclude == "LOW ALT EXCLUDED")
+                {
+                    excludeStatus = "Show";
+                    aircraft.infoExclude = "";
+                }
+
+                // Exclude mid altitude traffic
+                if (ExclMidAltTraffic && aircraft.altimeter > 9999 && aircraft.altimeter <= 19999 && aircraft.infoExclude != "MID ALT EXCLUDED")
+                {
+                    excludeStatus = "Hide";
+                    aircraft.infoExclude = "MID ALT EXCLUDED";
+                }
+                if (!ExclMidAltTraffic && aircraft.altimeter > 9999 && aircraft.altimeter <= 19999 && aircraft.infoExclude == "MID ALT EXCLUDED")
+                {
+                    excludeStatus = "Show";
+                    aircraft.infoExclude = "";
+                }
+
+                // Exclude high altitude traffic
+                if (ExclHigAltTraffic && aircraft.altimeter > 19999 && aircraft.infoExclude != "HIGH ALT EXCLUDED")
+                {
+                    excludeStatus = "Hide";
+                    aircraft.infoExclude = "HIGH ALT EXCLUDED";
+                }
+                if (!ExclHigAltTraffic && aircraft.altimeter > 19000 && aircraft.infoExclude == "HIGH ALT EXCLUDED")
+                {
+                    excludeStatus = "Show";
+                    aircraft.infoExclude = "";
+                }
+
+
+                if (excludeStatus == "Hide") //Despawn the aircraft
+                {
+                    var request = DataRequests.AI_RELEASE + _requestCount;
+                    _requestCount = (_requestCount + 1) % 10000;
+                    _simConnect.AIRemoveObject(aircraft.objectId, request);
+                    excludeStatus = "";
                 }
                 
-                // Correct the Altitude over 30.000ft for that airplane
-                //<____________________________________________________>
-                // Here all airliners over 30.000 feet will be teleportet and fly a little then it will teleportet again.
-                // The problem is, that the AI airplane will correct the altitude to ground level after a while. so the altitude will not stay if we not teleport it.
-                if (altimeter > 9144 && aircraft.onceFixAltitudeCallsign == aircraft.callsign && aircraft.objectId != 0) //
+                if (excludeStatus == "Show") // Spawn the aircraft
                 {
-                    PositionData position = new PositionData
-                    {
-                        Latitude = aircraft.latitude,
-                        Longitude = aircraft.longitude,
-                        Altitude = aircraft.altimeter,
-                        Heading = aircraft.heading,
-                        Pitch = 0,
-                        Bank = 0,
-                        Airspeed = (uint)aircraft.speed,
-                        OnGround = 0
-                    };
-                    Log.Information("Changing altitute for a highflying plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
+                    LiveTrafficAircraft.Remove(aircraft);
+                    var request = DataRequests.AI_RELEASE + _requestCount;
+                    _requestCount = (_requestCount + 1) % 10000;
+                    SetObjectId(aircraft.objectId, (uint)request);
+                    LiveTrafficAircraft.Add(aircraft);
+                    SpawnPlane(aircraft);
+                    aircraft.isTeleportFixed = false; //for the new altituide correction 
+                    aircraft.onceSetGround = false; // for the new set when it was grounded
+                    excludeStatus = "";
                 }
-                if (altimeter > 9144 && aircraft.onceFixAltitudeCallsign != aircraft.callsign && aircraft.objectId != 0) //
-                {
-                    aircraft.waypoints.Add(new Waypoint()
-                    {
-                        Latitude = latitude,
-                        Longitude = longitude,
-                        Altitude = altimeter,
-                        Speed = speed,
-                        IsGrounded = isGrounded
-                    });
-                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
-                }
-                
-                //<____________________________________________________>
+                //.-.-.-.-.-.-.-.-.-.-.-.-.
 
                 aircraft.latitude = latitude;
                 aircraft.longitude = longitude;
                 aircraft.altimeter = altimeter;
+                aircraft.altimeterMeter = altimeterMeter;
                 aircraft.heading = heading;
                 aircraft.speed = speed;
                 aircraft.isGrounded = isGrounded;
+                infoExclude = aircraft.infoExclude;
             }
             try
             {
@@ -327,14 +473,16 @@ namespace Simvars.Util
             {
                 Latitude = aircraft.latitude,
                 Longitude = aircraft.longitude,
-                Altitude = aircraft.altimeter,
+                Altitude = aircraft.altimeterMeter,
                 Pitch = 0,
                 Bank = 0,
                 Heading = aircraft.heading,
                 OnGround = (uint)(aircraft.isGrounded ? 0 : 1),
-                Airspeed = (uint)aircraft.speed
+                Airspeed = (uint)(aircraft.speed-((aircraft.speed/100)*50))
             };
+            if(aircraft.infoExclude != aircraft.callsign)
             _simConnect.AICreateNonATCAircraft(aircraft.matchedModel, aircraft.tailNumber, position, requestId);
+
         }
     }
 }

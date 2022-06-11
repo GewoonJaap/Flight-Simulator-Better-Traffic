@@ -297,7 +297,7 @@ namespace Simvars
             var eException = (SIMCONNECT_EXCEPTION)data.dwException;
             Log.Error($"SimConnect_OnRecvException: {eException}, this could be related to a request above.");
 
-            lErrorMessages.Add("SimConnect : " + eException);
+            lErrorMessages.Add("@" + DateTime.Now.ToString("HH:mm:ss") + ": " + eException);
         }
 
         private void simconnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
@@ -529,17 +529,104 @@ namespace Simvars
 
         private bool _mBSaveValues = true;
 
-        public bool bHighAltitudeTraffic
+        //Exclude Traffic Checkboxhandling
+        //================================
+        public bool bGaTraffic
         {
-            get => _mbHighAltitudeTraffic;
-            set { 
-                SetProperty(ref _mbHighAltitudeTraffic, value);
+            get => _mbGaTraffic;
+            set
+            {
+                SetProperty(ref _mbGaTraffic, value);
+                _liveTrafficHandler.ExclGaTraffic = value;
+            }
+        }
+
+        private bool _mbGaTraffic;
+
+        public bool bGlidTraffic
+        {
+            get => _mbGlidTraffic;
+            set
+            {
+                SetProperty(ref _mbGlidTraffic, value);
+                _liveTrafficHandler.ExclGlidTraffic = value;
+            }
+        }
+
+        private bool _mbGlidTraffic;
+
+        public bool bAirlTraffic
+        {
+            get => _mbAirlTraffic;
+            set
+            {
+                SetProperty(ref _mbAirlTraffic, value);
+                _liveTrafficHandler.ExclAirlTraffic = value;
+            }
+        }
+
+        private bool _mbAirlTraffic;
+
+        public bool bGroundTraffic
+        {
+            get => _mbGroundTraffic;
+            set
+            {
+                SetProperty(ref _mbGroundTraffic, value);
+                _liveTrafficHandler.ExclGroundTraffic = value;
+            }
+        }
+
+        private bool _mbGroundTraffic;
+
+        public bool bLowAltTraffic
+        {
+            get => _mbLowAltTraffic;
+            set
+            {
+                SetProperty(ref _mbLowAltTraffic, value);
+                _liveTrafficHandler.ExclLowAltTraffic = value;
+            }
+        }
+
+        private bool _mbLowAltTraffic;
+
+        public bool bMidAltTraffic
+        {
+            get => _mbMidAltTraffic;
+            set
+            {
+                SetProperty(ref _mbMidAltTraffic, value);
+                _liveTrafficHandler.ExclMidAltTraffic = value;
+            }
+        }
+
+        private bool _mbMidAltTraffic;
+
+        public bool bHigAltTraffic
+        {
+            get => _mbHigAltTraffic;
+            set
+            {
+                SetProperty(ref _mbHigAltTraffic, value);
+                _liveTrafficHandler.ExclHigAltTraffic = value;
+            }
+        }
+
+        private bool _mbHigAltTraffic;
+
+        public bool bHigAltTrafficMode
+        {
+            get => _mbHigAltTrafficMode;
+            set
+            {
+                SetProperty(ref _mbHigAltTrafficMode, value);
                 _liveTrafficHandler.HighAltitudeTraffic = value;
             }
         }
 
-        private bool _mbHighAltitudeTraffic;
-
+        private bool _mbHigAltTrafficMode;
+        //================================
         public bool bIsString
         {
             get => _mBIsString;
