@@ -411,6 +411,13 @@ namespace Simvars.Util
                 if (excludeStatus == "Show") // Spawn the aircraft
                 {
                     LiveTrafficAircraft.Remove(aircraft);
+                    aircraft.latitude = latitude;
+                    aircraft.longitude = longitude;
+                    aircraft.altimeter = altimeter;
+                    aircraft.altimeterMeter = altimeterMeter;
+                    aircraft.heading = heading;
+                    aircraft.speed = speed;
+                    aircraft.isGrounded = isGrounded;
                     var request = DataRequests.AI_RELEASE + _requestCount;
                     _requestCount = (_requestCount + 1) % 10000;
                     SetObjectId(aircraft.objectId, (uint)request);
