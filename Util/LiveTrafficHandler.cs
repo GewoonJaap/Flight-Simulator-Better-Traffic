@@ -246,6 +246,7 @@ namespace Simvars.Util
                     //*******************************************
                     if (aircraft.isGrounded && !aircraft.onceSetGround && aircraft.countApproaching == 0)
                     {
+                        _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
                         aircraft.onceSetGround = true;
                         aircraft.isGrounded = true;
                         
