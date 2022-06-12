@@ -7,7 +7,7 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:simvars="clr-namespace:Simvars" d:DataContext="{d:DesignInstance Type=simvars:SimvarsViewModel}"
         mc:Ignorable="d"
-        Title="Enhanced Live Traffic 3.01 | Developed by Mr. Proper | optimized by Mauflo12961" Height="700" Width="1085" MinWidth="800" MinHeight="700">
+        Title="Enhanced Live Traffic 3.02 | Developed by Mr. Proper | optimized by Mauflo12961" Height="700" Width="1085" MinWidth="800" MinHeight="700">
 
     <Window.Resources>
     </Window.Resources>
@@ -40,7 +40,7 @@
                 <GridView>
                     <GridViewColumn Header="Callsign" Width="80" DisplayMemberBinding="{Binding callsign}" />
                     <GridViewColumn Header="Speed" Width="70" DisplayMemberBinding="{Binding speed}" />
-                    <GridViewColumn Header="Altitude Org" Width="70" DisplayMemberBinding="{Binding altimeter}" />
+                    <GridViewColumn Header="Altitude" Width="70" DisplayMemberBinding="{Binding altimeter}" />
                     <GridViewColumn Header="Model Code" Width="80" DisplayMemberBinding="{Binding modelCode}" />
                     <GridViewColumn Header="Spawned Aircraft" Width="200" DisplayMemberBinding="{Binding matchedModel}" />
                     <GridViewColumn Header="Model" Width="200" DisplayMemberBinding="{Binding model}" />
