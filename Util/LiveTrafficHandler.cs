@@ -263,10 +263,6 @@ namespace Simvars.Util
                         aircraft.isGrounded = false;
                         if (aircraft.countApproaching == 0) // Grounding only when 30 seconds (delay from start) is over
                         {
-                            if (aircraft.latitude != aircraft.latitudeBefore || aircraft.longitude != aircraft.longitudeBefore)
-                            {
-
-                            }
                             PositionData position = new PositionData
                             {
                                 Latitude = aircraft.latitude,
