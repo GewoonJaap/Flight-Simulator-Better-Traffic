@@ -1,4 +1,4 @@
-﻿using Microsoft.FlightSimulator.SimConnect;
+using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
 using Serilog;
@@ -19,8 +19,10 @@ namespace Simvars.Model
         public DateTime corrTime1 { get; set; }
 
         public bool tiktak { get; set; }
+        public bool alignHeading { get; set; } = false;
         public string onceFixAltitudeCallsign { get; set; }
         public bool onceSetGround { get; set; } = false;
+        public bool DepartingHeadingCheck { get; set; } = false;
 
         #endregion SimData
 
@@ -60,11 +62,17 @@ namespace Simvars.Model
         public int checkHeading { get; set; }
         public bool finnishCollectingWp { get; set; } = false;
         public double latitude { get; set; }
+        public double latitudeBefore { get; set; }
         public double longitude { get; set; }
+        public double longitudeBefore { get; set; }
         public double altimeter { get; set; }
+        public double altimeterBefore { get; set; }
         public double altimeterMeter{ get; set; }
+        public double altimeterMeterBefore { get; set; }
         public int speed { get; set; }
         public int heading { get; set; }
+        public int StartHeading { get; set; }
+        public double headingBefore { get; set; }
         public bool isGrounded { get; set; }
         public string airportOrigin { get; set; }
         public string airportDestination { get; set; }
