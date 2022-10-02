@@ -1,4 +1,4 @@
-﻿using Microsoft.FlightSimulator.SimConnect;
+using Microsoft.FlightSimulator.SimConnect;
 using Newtonsoft.Json.Linq;
 using Simvars.Emum;
 using Simvars.Model;
@@ -17,7 +17,7 @@ namespace Simvars.Util
         private int _requestCount = 0;
         private int MaxPlanes = 60;
         private List<Addon> _addons;
-        private readonly int _teleportFixDelay = 30;
+        private int _teleportFixDelay = 30;
         private int toOnGround;
 
         public string excludeAirportOrigin;
@@ -195,17 +195,57 @@ namespace Simvars.Util
                 }
 
                 if (aircraft.objectId == 0) continue;
-                
+
                 if (!aircraft.infoExclude.Contains("EXCLUDED"))
                 {
+                    if (aircraft.speed < 9) aircraft.isGrounded = true; //Slow GA Traffic should be grounded in this way
                     //Here starts the handling for the movement
                     // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
                     if (!aircraft.isGrounded) // Update a waypoint of an aircraft in flight with every third data retrieval...
                     {
+                        if (aircraft.icaoAirline == "") _teleportFixDelay = 10; _teleportFixDelay = 30; // Info for JAAP: Faster waypoints for GA traffic that the reactions are faster and the course is more reliable
                         if ((DateTime.Now - aircraft.corrTime).Seconds > _teleportFixDelay && aircraft.speed > 20 && aircraft.onceFixAltitudeCallsign != aircraft.callsign) // speed>30 = controll if should start or if landing happend onceFixAltitude Airplains should not touched    && aircraft.onceFixAltitudeCallsign != aircraft.callsign
                         {
                             aircraft.onceFixAltitudeCallsign = aircraft.callsign;
                             aircraft.corrTime = DateTime.Now;// Info for JAAP - This is new because if you don't actualize the time then the fixing will only done once and not every _teleportFixDelay - that means that the airplane fliy straight ahen and does not follow the course
+                            // Info for JAAP - Before start set the heading of the runway! That's necessary because turning on the night textures only works with the waypoint function and that lets the plane rotate on the spot snd therefor the heading is noct the same as the runway after 30 seconds
+                            if (!aircraft.alignHeading && (aircraft.longitudeBefore > 0 || aircraft.latitudeBefore > 0)) // Info for JAAP: Only for airplanes they are movements on the ground before!
+                            {
+                                if (aircraft.DepartingHeadingCheck) // Check if the plane is starting and give them the correct heading
+                                {
+                                    PositionData position = new PositionData
+                                    {
+                                        Latitude = aircraft.latitudeBefore,
+                                        Longitude = aircraft.longitudeBefore,
+                                        Altitude = aircraft.altimeterMeterBefore, // In flight use correct heading 
+                                        Heading = aircraft.heading, 
+                                        Pitch = 0,
+                                        Bank = 0,
+                                        Airspeed = (uint)speed,
+                                        OnGround = (uint)(isGrounded ? 0 : 1)
+                                    };
+                                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                                    aircraft.alignHeading = true; //important: set only once before the start
+                                }
+                                else
+                                {
+                                    PositionData position = new PositionData
+                                    {
+                                        Latitude = aircraft.latitudeBefore,
+                                        Longitude = aircraft.longitudeBefore,
+                                        Altitude = aircraft.altimeterMeterBefore,
+                                        Heading = aircraft.StartHeading, //For Start use the Runway Heading = Last Heading on Ground
+                                        Pitch = 0,
+                                        Bank = 0,
+                                        Airspeed = (uint)speed,
+                                        OnGround = (uint)(isGrounded ? 0 : 1)
+                                    };
+                                    _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+                                    aircraft.alignHeading = true; //important: set only once before the start
+                                }
+                                aircraft.DepartingHeadingCheck = true; //Now calculate with the correct Heading
+                            }
+
                             aircraft.waypoints.Add(new Waypoint()
                             {
                                 Latitude = latitude,
@@ -223,6 +263,10 @@ namespace Simvars.Util
                         aircraft.isGrounded = false;
                         if (aircraft.countApproaching == 0) // Grounding only when 30 seconds (delay from start) is over
                         {
+                            if (aircraft.latitude != aircraft.latitudeBefore || aircraft.longitude != aircraft.longitudeBefore)
+                            {
+
+                            }
                             PositionData position = new PositionData
                             {
                                 Latitude = aircraft.latitude,
@@ -232,13 +276,28 @@ namespace Simvars.Util
                                 Pitch = 0,
                                 Bank = 0,
                                 Airspeed = (uint)aircraft.speed,
-                                OnGround = 1
+                                OnGround = 0// (uint)(isGrounded ? 0 : 1)                            
                             };
                             Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
                             _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
+
+                            // This function is neccasery turn on the Night Textures on ground - but that lets the plane rotate on the spot
+                            aircraft.latitude = aircraft.latitude;
+                            aircraft.longitude = aircraft.longitude;
+                            aircraft.altimeter = altimeter;
+                            aircraft.speed = 10; //speed;
+                            aircraft.isGrounded = true;// isGrounded;
+                            _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
+
+
                             aircraft.isGrounded = true;
+                            aircraft.latitudeBefore = aircraft.latitude;
+                            aircraft.longitudeBefore = aircraft.longitude;
+                            aircraft.headingBefore = aircraft.heading;
+                            aircraft.altimeterMeterBefore = aircraft.altimeterMeter;
                         }
                         if (aircraft.countApproaching > 0) aircraft.countApproaching --;
+                        aircraft.StartHeading = aircraft.heading;
                     }
                     // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
@@ -249,7 +308,7 @@ namespace Simvars.Util
                         _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneWaypoints, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, aircraft.GetWayPointObjectArray());
                         aircraft.onceSetGround = true;
                         aircraft.isGrounded = true;
-                        
+
                         PositionData position = new PositionData
                         {
                             Latitude = aircraft.latitude,
@@ -265,7 +324,7 @@ namespace Simvars.Util
                         _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
                     }
                     //********************************************/
-                    
+
                     // That is the function to turn on or off the teleporting of the high altitude traffic
                     if (HighAltitudeTraffic && altimeter > 9144)
                     {
