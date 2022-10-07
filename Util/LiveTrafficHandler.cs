@@ -88,7 +88,6 @@ namespace Simvars.Util
                 //Determine if object is a plane, we only want planes from the api, not the other stat keys ;)
                 if (!char.IsDigit(property.Name.ToCharArray()[0])) continue;
                 flightRadarIds.Add(property.Name);
-
                 Aircraft aircraft = LiveTrafficAircraft.FirstOrDefault(item => item.flightRadarId == property.Name);
 
                 double longitude = (double)property.Value[2];
@@ -261,6 +260,8 @@ namespace Simvars.Util
                     else
                     {
                         aircraft.isGrounded = false;
+                        aircraft.altimeterMeterBefore = 0;
+                        if (aircraft.countApproaching == 1) aircraft.speed = 50;
                         if (aircraft.countApproaching == 0) // Grounding only when 30 seconds (delay from start) is over
                         {
                             PositionData position = new PositionData
@@ -277,7 +278,7 @@ namespace Simvars.Util
                             Log.Information("Setteling a grounded plane " + aircraft.tailNumber + " lat: " + aircraft.latitude + " long: " + aircraft.longitude + " request ID: " + aircraft.requestId + " speed: " + aircraft.speed + " heading: " + aircraft.heading + " objectId " + aircraft.objectId);
                             _simConnect.SetDataOnSimObject(SimConnectDataDefinition.PlaneLocation, aircraft.objectId, SIMCONNECT_DATA_SET_FLAG.DEFAULT, position);
 
-                            // This function is neccasery turn on the Night Textures on ground - but that lets the plane rotate on the spot
+                            // This function is neccasery to turn on the Night Textures on ground - but that let's the plane rotate on the spot
                             aircraft.latitude = aircraft.latitude;
                             aircraft.longitude = aircraft.longitude;
                             aircraft.altimeter = altimeter;
