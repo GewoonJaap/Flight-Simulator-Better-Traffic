@@ -53,8 +53,12 @@ namespace Simvars.Model
         public double[] wpAltitudeMeter = new double[10];
         public int[] wpHeading = new int[10];
         public int[] wpSpeed = new int[10];
-        public bool[] wpIsGrounded = new bool[10];*/
-        
+        public bool[] wpIsGrounded = new bool[10];
+        public double latitudeTaxi { get; set; }
+        public double longitudeTaxi { get; set; }*/
+
+        public int countTaxi { get; set; }
+
         public bool checkDeparting { get; set; }
         public bool checkApproaching { get; set; }
         public int countApproaching { get; set; }
